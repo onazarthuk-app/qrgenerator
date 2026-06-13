@@ -3,1050 +3,642 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>QR Studio — генератор і аналітика</title>
+<title>QR Studio — Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
-:root {
-  --ink: #0d0d0d;
-  --ink2: #3a3a3a;
-  --ink3: #6b6b6b;
-  --ink4: #9a9a9a;
-  --bg: #f7f6f3;
-  --surface: #ffffff;
-  --border: #e4e3de;
-  --border2: #d0cfc9;
-  --accent: #4f46e5;
-  --accent-light: #eeedfb;
-  --accent-mid: #a5b4fc;
-  --green: #16a34a;
-  --green-bg: #dcfce7;
-  --red: #dc2626;
-  --red-bg: #fee2e2;
-  --amber: #d97706;
-  --amber-bg: #fef3c7;
-  --sidebar-w: 260px;
-  --radius: 10px;
-  --radius-sm: 6px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'Inter', system-ui, sans-serif;
-  background: var(--bg);
-  color: var(--ink);
-  min-height: 100vh;
-  display: flex;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-/* ── SIDEBAR ── */
-.sidebar {
-  width: var(--sidebar-w);
-  background: var(--ink);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  top: 0; left: 0; bottom: 0;
-  z-index: 100;
-  padding: 0;
-}
-
-.sidebar-logo {
-  padding: 20px 20px 16px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
-.logo-mark {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.logo-icon {
-  width: 34px; height: 34px;
-  background: var(--accent);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.logo-icon svg { width: 18px; height: 18px; fill: #fff; }
-
-.logo-name {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 17px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.3px;
-}
-
-.logo-name span { color: var(--accent-mid); }
-
-.sidebar-nav {
-  flex: 1;
-  padding: 12px 10px;
-  overflow-y: auto;
-}
-
-.nav-section-label {
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  color: rgba(255,255,255,0.3);
-  padding: 8px 10px 4px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 10px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  color: rgba(255,255,255,0.55);
-  font-size: 13.5px;
-  transition: background 0.12s, color 0.12s;
-  user-select: none;
-}
-
-.nav-item:hover { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.85); }
-.nav-item.active { background: rgba(79,70,229,0.25); color: #fff; }
-.nav-item.active .nav-icon { color: var(--accent-mid); }
-
-.nav-icon {
-  width: 18px; height: 18px;
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-.nav-item.active .nav-icon { opacity: 1; }
-
-.nav-badge {
-  margin-left: auto;
-  background: var(--accent);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 1px 6px;
-  border-radius: 20px;
-  min-width: 20px;
-  text-align: center;
-}
-
-.sidebar-footer {
-  padding: 14px 20px;
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-
-.sidebar-stat-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.s-stat {
-  background: rgba(255,255,255,0.06);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-}
-
-.s-stat-n {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-  line-height: 1;
-}
-
-.s-stat-l {
-  font-size: 10px;
-  color: rgba(255,255,255,0.35);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 3px;
-}
-
-/* ── MAIN ── */
-.main {
-  margin-left: var(--sidebar-w);
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.topbar {
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  padding: 0 28px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.topbar-title {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.topbar-actions { display: flex; gap: 8px; }
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.12s;
-  border: 1px solid transparent;
-  white-space: nowrap;
-}
-
-.btn-ghost {
-  background: transparent;
-  border-color: var(--border2);
-  color: var(--ink2);
-}
-
-.btn-ghost:hover { background: var(--bg); border-color: var(--border2); }
-
-.btn-accent {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-}
-
-.btn-accent:hover { background: #4338ca; }
-.btn-accent:active { transform: scale(0.98); }
-
-.content {
-  padding: 28px;
-  flex: 1;
-}
-
-/* ── VIEWS ── */
-.view { display: none; }
-.view.active { display: block; }
-
-/* ── GENERATOR VIEW ── */
-.gen-layout {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 20px;
-  align-items: start;
-}
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-}
-
-.card-header {
-  padding: 16px 20px 12px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.card-title {
-  font-size: 13.5px;
-  font-weight: 600;
-  color: var(--ink);
-}
-
-.card-subtitle {
-  font-size: 12px;
-  color: var(--ink4);
-  margin-top: 1px;
-}
-
-.card-body { padding: 20px; }
-
-/* URL INPUT */
-.url-field {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.url-input-wrap {
-  flex: 1;
-  position: relative;
-}
-
-.url-input-wrap svg {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 16px; height: 16px;
-  color: var(--ink4);
-}
-
-.url-input {
-  width: 100%;
-  padding: 10px 12px 10px 36px;
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  font-family: 'Inter', sans-serif;
-  color: var(--ink);
-  background: var(--bg);
-  outline: none;
-  transition: border-color 0.12s, box-shadow 0.12s;
-}
-
-.url-input:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(79,70,229,0.1);
-  background: var(--surface);
-}
-
-/* TABS */
-.option-tabs {
-  display: flex;
-  gap: 2px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 20px;
-}
-
-.opt-tab {
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ink3);
-  cursor: pointer;
-  border: none;
-  background: none;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-  transition: color 0.12s, border-color 0.12s;
-}
-
-.opt-tab:hover { color: var(--ink); }
-.opt-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-.opt-panel { display: none; }
-.opt-panel.active { display: block; }
-
-/* FORM ROWS */
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-
-.form-group label {
-  display: block;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--ink3);
-  margin-bottom: 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-
-.form-group select,
-.form-group input[type="range"] {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-sm);
-  font-size: 13px;
-  background: var(--bg);
-  color: var(--ink);
-  outline: none;
-  cursor: pointer;
-}
-
-.form-group select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(79,70,229,0.08);
-}
-
-.color-picker-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 7px 10px;
-  border: 1px solid var(--border2);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
-}
-
-.color-picker-row input[type="color"] {
-  width: 24px; height: 24px;
-  border: none;
-  background: none;
-  padding: 0;
-  cursor: pointer;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.color-hex {
-  font-size: 12px;
-  font-family: 'Space Grotesk', monospace;
-  color: var(--ink2);
-  flex: 1;
-}
-
-.range-row { display: flex; align-items: center; gap: 10px; }
-.range-val {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ink);
-  min-width: 40px;
-  text-align: right;
-}
-
-/* LOGO UPLOAD */
-.logo-upload-area {
-  border: 1.5px dashed var(--border2);
-  border-radius: var(--radius);
-  padding: 20px;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color 0.12s, background 0.12s;
-  position: relative;
-}
-
-.logo-upload-area:hover {
-  border-color: var(--accent);
-  background: var(--accent-light);
-}
-
-.logo-upload-area input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-}
-
-.logo-upload-area svg {
-  width: 28px; height: 28px;
-  color: var(--ink4);
-  margin: 0 auto 8px;
-  display: block;
-}
-
-.logo-upload-area p {
-  font-size: 13px;
-  color: var(--ink3);
-}
-
-.logo-upload-area span {
-  font-size: 11px;
-  color: var(--ink4);
-}
-
-.logo-preview-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px;
-  background: var(--bg);
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-}
-
-.logo-preview-img {
-  width: 40px; height: 40px;
-  object-fit: contain;
-  border-radius: 4px;
-  background: #fff;
-  border: 1px solid var(--border);
-}
-
-.logo-preview-name {
-  flex: 1;
-  font-size: 13px;
-  color: var(--ink2);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.logo-size-row { margin-top: 12px; }
-
-/* QR PREVIEW PANEL */
-.preview-panel {
-  position: sticky;
-  top: 76px;
-}
-
-.qr-canvas-container {
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #fff;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  overflow: hidden;
-  position: relative;
-  min-height: 240px;
-}
-
-.qr-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  color: var(--ink4);
-}
-
-.qr-empty-state svg {
-  width: 48px; height: 48px;
-  opacity: 0.2;
-}
-
-.qr-empty-state p { font-size: 13px; text-align: center; }
-
-#qr-output { display: none; }
-#qr-output canvas { display: block !important; }
-
-.qr-domain-chip {
-  text-align: center;
-  font-size: 12px;
-  color: var(--ink4);
-  padding: 6px 0 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.preview-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 12px;
-}
-
-.preview-actions .btn { flex: 1; justify-content: center; font-size: 12px; padding: 8px 6px; }
-
-/* SCAN TRACKER */
-.scan-box {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  margin-top: 12px;
-  display: none;
-}
-
-.scan-box-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.scan-number {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 36px;
-  font-weight: 700;
-  color: var(--ink);
-  line-height: 1;
-}
-
-.scan-label { font-size: 11px; color: var(--ink4); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 3px; }
-
-.scan-btn {
-  background: var(--accent-light);
-  color: var(--accent);
-  border: 1px solid rgba(79,70,229,0.2);
-  border-radius: var(--radius-sm);
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.12s;
-  display: flex; align-items: center; gap: 5px;
-}
-
-.scan-btn:hover { background: var(--accent); color: #fff; }
-.scan-btn:active { transform: scale(0.96); }
-
-.scan-sparkline { height: 40px; margin-top: 8px; }
-
-/* ── HISTORY ── */
-.history-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 14px;
-}
-
-.hist-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  cursor: pointer;
-  transition: box-shadow 0.15s, border-color 0.15s, transform 0.12s;
-}
-
-.hist-card:hover {
-  box-shadow: var(--shadow-md);
-  border-color: var(--border2);
-  transform: translateY(-1px);
-}
-
-.hist-card.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(79,70,229,0.12); }
-
-.hist-card-top {
-  display: flex;
-  gap: 12px;
-  padding: 14px 14px 10px;
-  align-items: center;
-}
-
-.hist-thumb {
-  width: 56px; height: 56px;
-  flex-shrink: 0;
-  background: #fff;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  overflow: hidden;
-  display: flex; align-items: center; justify-content: center;
-}
-
-.hist-thumb canvas { width: 56px !important; height: 56px !important; }
-
-.hist-info { flex: 1; min-width: 0; }
-
-.hist-domain {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.hist-url {
-  font-size: 11px;
-  color: var(--ink4);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: 2px;
-}
-
-.hist-time { font-size: 11px; color: var(--ink4); margin-top: 4px; }
-
-.hist-card-bottom {
-  padding: 8px 14px 12px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.scan-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: var(--accent-light);
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 20px;
-}
-
-.hist-actions { display: flex; gap: 4px; }
-
-.icon-btn {
-  width: 28px; height: 28px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--bg);
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.1s, border-color 0.1s;
-  color: var(--ink3);
-}
-
-.icon-btn:hover { background: var(--surface); border-color: var(--border2); color: var(--ink); }
-.icon-btn svg { width: 14px; height: 14px; }
-
-/* ── ANALYTICS ── */
-.analytics-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  margin-bottom: 20px;
-}
-
-.metric-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 18px;
-  box-shadow: var(--shadow);
-}
-
-.metric-label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: var(--ink4);
-  margin-bottom: 8px;
-}
-
-.metric-value {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--ink);
-  line-height: 1;
-}
-
-.metric-delta {
-  font-size: 12px;
-  color: var(--green);
-  margin-top: 4px;
-  display: flex; align-items: center; gap: 3px;
-}
-
-.analytics-charts {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 14px;
-}
-
-.chart-container { height: 240px; position: relative; }
-
-/* LOCATION TABLE */
-.loc-table { width: 100%; border-collapse: collapse; }
-.loc-table th {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  color: var(--ink4);
-  padding: 8px 0;
-  text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-.loc-table td {
-  padding: 10px 0;
-  font-size: 13px;
-  border-bottom: 1px solid var(--border);
-  color: var(--ink2);
-}
-.loc-table tr:last-child td { border-bottom: none; }
-.loc-flag { margin-right: 6px; }
-.loc-bar-wrap { position: relative; height: 4px; background: var(--border); border-radius: 4px; flex: 1; min-width: 60px; }
-.loc-bar { height: 4px; background: var(--accent); border-radius: 4px; transition: width 0.4s ease; }
-.loc-pct { font-size: 12px; font-weight: 600; color: var(--ink3); min-width: 36px; text-align: right; }
-
-/* ── EMPTY STATE ── */
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--ink4);
-}
-.empty-state svg { width: 52px; height: 52px; opacity: 0.18; margin: 0 auto 12px; display: block; }
-.empty-state h3 { font-size: 15px; color: var(--ink3); font-weight: 600; margin-bottom: 6px; }
-.empty-state p { font-size: 13px; max-width: 280px; margin: 0 auto; }
-
-/* ── TOAST ── */
-.toast-container {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.toast {
-  background: var(--ink);
-  color: #fff;
-  padding: 11px 16px;
-  border-radius: var(--radius);
-  font-size: 13px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-  animation: slideIn 0.22s ease;
-  max-width: 300px;
-}
-
-.toast.success { background: #166534; }
-.toast.error { background: #991b1b; }
-
-@keyframes slideIn {
-  from { transform: translateX(20px); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideOut {
-  to { transform: translateX(20px); opacity: 0; }
-}
-
-.toast.out { animation: slideOut 0.18s ease forwards; }
-
-/* ── MODAL ── */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.18s;
-}
-
-.modal-overlay.open { opacity: 1; pointer-events: all; }
-
-.modal {
-  background: var(--surface);
-  border-radius: var(--radius);
-  width: 100%;
-  max-width: 440px;
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-}
-
-.modal-header {
-  padding: 18px 20px 14px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modal-title { font-size: 15px; font-weight: 600; }
-
-.modal-close {
-  width: 28px; height: 28px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: none;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  color: var(--ink3);
-  transition: background 0.1s;
-}
-
-.modal-close:hover { background: var(--bg); }
-.modal-close svg { width: 14px; height: 14px; }
-
-.modal-body { padding: 20px; }
-
-.modal-qr-wrap {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-}
-
-.modal-qr-wrap canvas { border-radius: 6px; border: 1px solid var(--border); }
-
-.modal-url {
-  background: var(--bg);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  font-size: 12px;
-  color: var(--ink3);
-  word-break: break-all;
-  margin-bottom: 14px;
-}
-
-.modal-footer {
-  padding: 14px 20px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090b;
+  --bg2:#111113;
+  --bg3:#18181b;
+  --bg4:#1f1f23;
+  --bg5:#27272a;
+  --border:#2a2a2e;
+  --border2:#3a3a3e;
+  --text:#fafafa;
+  --text2:#a1a1aa;
+  --text3:#71717a;
+  --text4:#52525b;
+  --accent:#7c3aed;
+  --accent2:#8b5cf6;
+  --accent3:#a78bfa;
+  --accent-glow:rgba(124,58,237,0.25);
+  --accent-dim:rgba(124,58,237,0.12);
+  --green:#22c55e;
+  --green-dim:rgba(34,197,94,0.12);
+  --red:#ef4444;
+  --red-dim:rgba(239,68,68,0.12);
+  --amber:#f59e0b;
+  --amber-dim:rgba(245,158,11,0.12);
+  --cyan:#06b6d4;
+  --cyan-dim:rgba(6,182,212,0.12);
+  --r:10px;--r-sm:6px;--r-xs:4px;
+  --sw:240px;
+  --sh:0 0 0 1px var(--border);
+  --sh-lg:0 20px 60px rgba(0,0,0,0.6);
+  --sh-glow:0 0 30px var(--accent-glow);
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.5;display:flex}
 
 /* ── SCROLLBAR ── */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--text4)}
 
-/* ── RESPONSIVE ── */
-@media (max-width: 900px) {
-  .gen-layout { grid-template-columns: 1fr; }
-  .preview-panel { position: static; }
-  .analytics-grid { grid-template-columns: 1fr 1fr; }
-  .analytics-charts { grid-template-columns: 1fr; }
+/* ── SIDEBAR ── */
+.sidebar{
+  width:var(--sw);flex-shrink:0;
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  height:100vh;position:relative;z-index:10;
+}
+.sb-logo{
+  padding:20px 16px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;
+}
+.sb-logo-mark{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  box-shadow:0 0 16px var(--accent-glow);
+}
+.sb-logo-mark svg{width:16px;height:16px;fill:#fff}
+.sb-logo-name{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:16px;font-weight:700;
+  background:linear-gradient(90deg,#fff 0%,var(--accent3) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:-0.3px;
+}
+.sb-logo-tag{font-size:10px;color:var(--text4);letter-spacing:0.6px;text-transform:uppercase;margin-top:-1px}
+
+.sb-nav{flex:1;overflow-y:auto;padding:10px 8px}
+.sb-section{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text4);padding:12px 8px 4px}
+.sb-item{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;border-radius:var(--r-sm);
+  cursor:pointer;color:var(--text3);
+  font-size:13px;font-weight:500;
+  transition:all .15s;user-select:none;position:relative;
+}
+.sb-item:hover{color:var(--text);background:var(--bg4)}
+.sb-item.active{color:var(--text);background:var(--accent-dim)}
+.sb-item.active::before{
+  content:'';position:absolute;left:0;top:20%;bottom:20%;
+  width:2px;background:var(--accent2);border-radius:2px;
+}
+.sb-item-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.sb-item.active .sb-item-icon{opacity:1;color:var(--accent3)}
+.sb-badge{
+  margin-left:auto;background:var(--accent);color:#fff;
+  font-size:10px;font-weight:700;
+  padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;
 }
 
-@media (max-width: 700px) {
-  :root { --sidebar-w: 0px; }
-  .sidebar { transform: translateX(-260px); transition: transform 0.25s; }
-  .sidebar.open { transform: translateX(0); --sidebar-w: 260px; }
-  .main { margin-left: 0; }
-  .analytics-grid { grid-template-columns: 1fr 1fr; }
+.sb-footer{padding:12px 16px;border-top:1px solid var(--border)}
+.sb-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.sb-stat{
+  background:var(--bg4);border:1px solid var(--border);
+  border-radius:var(--r-sm);padding:8px 10px;
+}
+.sb-stat-n{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--text)}
+.sb-stat-l{font-size:10px;color:var(--text4);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh;overflow:hidden}
+
+/* TOPBAR */
+.topbar{
+  height:52px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;
+  background:rgba(9,9,11,.8);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;z-index:5;
+}
+.topbar-left{display:flex;align-items:center;gap:8px}
+.topbar-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:var(--text)}
+.topbar-dot{width:4px;height:4px;border-radius:50%;background:var(--border2)}
+.topbar-sub{font-size:12px;color:var(--text3)}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:var(--r-sm);
+  font-size:12.5px;font-weight:500;cursor:pointer;
+  transition:all .15s;border:1px solid transparent;white-space:nowrap;
+  font-family:'Inter',sans-serif;
+}
+.btn svg{width:13px;height:13px;flex-shrink:0}
+.btn-ghost{background:transparent;border-color:var(--border2);color:var(--text2)}
+.btn-ghost:hover{background:var(--bg4);border-color:var(--border2);color:var(--text)}
+.btn-accent{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 0 16px var(--accent-glow)}
+.btn-accent:hover{background:var(--accent2);box-shadow:0 0 24px var(--accent-glow)}
+.btn-accent:active{transform:scale(.97)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-icon{width:30px;height:30px;padding:0;justify-content:center;border-color:var(--border);background:var(--bg3);color:var(--text3)}
+.btn-icon:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+
+/* CONTENT AREA */
+.content-area{flex:1;overflow-y:auto;overflow-x:hidden}
+.view{display:none;padding:24px}
+.view.active{display:block}
+
+/* ── CARDS ── */
+.card{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+}
+.card-header{
+  padding:14px 18px 12px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
+.card-subtitle{font-size:11.5px;color:var(--text3);margin-top:1px}
+.card-body{padding:18px}
+
+/* ── GENERATOR ── */
+.gen-layout{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+
+.url-row{display:flex;gap:8px;margin-bottom:18px}
+.url-wrap{flex:1;position:relative}
+.url-wrap-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text4);pointer-events:none}
+.url-inp{
+  width:100%;padding:9px 12px 9px 34px;
+  background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r-sm);
+  color:var(--text);font-size:13.5px;font-family:'Inter',sans-serif;outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.url-inp:focus{border-color:var(--accent2);box-shadow:0 0 0 3px var(--accent-dim);background:var(--bg5)}
+.url-inp::placeholder{color:var(--text4)}
+
+/* OPTION TABS */
+.opt-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:18px}
+.opt-tab{
+  padding:8px 14px;font-size:12.5px;font-weight:500;
+  color:var(--text3);cursor:pointer;border:none;background:none;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:color .12s,border-color .12s;
+}
+.opt-tab:hover{color:var(--text)}
+.opt-tab.active{color:var(--accent3);border-bottom-color:var(--accent2)}
+.opt-panel{display:none}
+.opt-panel.active{display:block}
+
+/* FORM */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fg.cols3{grid-template-columns:1fr 1fr 1fr}
+.fg.full{grid-template-columns:1fr}
+.fl label{
+  display:block;font-size:11px;font-weight:500;
+  text-transform:uppercase;letter-spacing:.5px;
+  color:var(--text3);margin-bottom:5px;
+}
+.fl select,.fl input[type=range]{
+  width:100%;padding:8px 10px;
+  background:var(--bg4);border:1px solid var(--border2);
+  border-radius:var(--r-sm);color:var(--text);
+  font-size:13px;font-family:'Inter',sans-serif;
+  outline:none;cursor:pointer;
+}
+.fl select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+.fl select:focus,.fl input:focus{border-color:var(--accent2);box-shadow:0 0 0 2px var(--accent-dim)}
+.fl select option{background:var(--bg4)}
+
+.color-row{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;
+  background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r-sm);
+}
+.color-swatch{width:22px;height:22px;border-radius:4px;border:1px solid var(--border2);cursor:pointer;overflow:hidden;flex-shrink:0}
+.color-swatch input[type=color]{width:30px;height:30px;border:none;background:none;padding:0;cursor:pointer;margin:-4px -8px;opacity:0;position:absolute}
+.color-swatch-preview{width:22px;height:22px;border-radius:3px;pointer-events:none}
+.color-hex{font-size:12px;font-family:'Space Grotesk',monospace;color:var(--text2);flex:1}
+
+.range-wrap{display:flex;align-items:center;gap:8px}
+.range-wrap input[type=range]{flex:1;accent-color:var(--accent2)}
+.range-val{font-size:12px;font-weight:600;color:var(--text2);min-width:38px;text-align:right}
+
+/* LOGO UPLOAD */
+.logo-drop{
+  border:1.5px dashed var(--border2);border-radius:var(--r);
+  padding:20px;text-align:center;cursor:pointer;
+  transition:border-color .15s,background .15s;position:relative;
+}
+.logo-drop:hover{border-color:var(--accent2);background:var(--accent-dim)}
+.logo-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.logo-drop-icon{width:28px;height:28px;color:var(--text4);margin:0 auto 8px;display:block}
+.logo-drop p{font-size:13px;color:var(--text3)}
+.logo-drop span{font-size:11px;color:var(--text4)}
+
+.logo-info{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg4);border-radius:var(--r-sm);border:1px solid var(--border)}
+.logo-thumb{width:38px;height:38px;object-fit:contain;border-radius:4px;background:var(--bg5);border:1px solid var(--border)}
+.logo-name{flex:1;font-size:12.5px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* PREVIEW PANEL */
+.preview-sticky{position:sticky;top:0}
+.qr-wrap{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  background:#fff;border-radius:var(--r);
+  border:1px solid var(--border);position:relative;overflow:hidden;
+  min-height:220px;
+}
+.qr-empty{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text4)}
+.qr-empty svg{width:44px;height:44px;opacity:.15}
+.qr-empty p{font-size:12.5px;text-align:center;color:var(--text4)}
+#qr-canvas-final{display:none;width:100% !important;height:auto !important;max-width:280px;border-radius:4px}
+#qr-raw-div{position:absolute;left:-9999px;top:-9999px}
+
+.qr-url-label{
+  text-align:center;font-size:11.5px;color:var(--text4);
+  padding:8px 4px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 
-/* Progress ring on scan button */
-.pulse-ring {
-  display: inline-block;
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-  position: relative;
+.preview-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}
+.preview-btns .btn{justify-content:center;font-size:11.5px;padding:7px 4px}
+
+/* SCAN BOX — the star */
+.scan-box{
+  margin-top:12px;
+  background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(139,92,246,.05));
+  border:1px solid rgba(124,58,237,.3);
+  border-radius:var(--r);padding:16px;
+  display:none;
+  position:relative;overflow:hidden;
 }
-.pulse-ring::after {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  border: 1.5px solid var(--accent);
-  animation: pulse 1.6s ease-out infinite;
-  opacity: 0;
+.scan-box::before{
+  content:'';position:absolute;inset:-40%;
+  background:radial-gradient(circle at 70% 30%, rgba(124,58,237,.08) 0%, transparent 60%);
+  pointer-events:none;
 }
-@keyframes pulse {
-  0% { transform: scale(0.8); opacity: 1; }
-  100% { transform: scale(1.8); opacity: 0; }
+.scan-box-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
+.scan-counter-col{flex:1}
+.scan-big{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:48px;font-weight:700;line-height:1;
+  background:linear-gradient(135deg,#fff,var(--accent3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:-1px;
 }
+.scan-label-row{display:flex;align-items:center;gap:6px;margin-top:4px}
+.scan-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex-shrink:0;animation:blink 2s ease infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.scan-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
+
+.scan-btn-col{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.scan-add-btn{
+  background:var(--accent);color:#fff;
+  border:none;border-radius:var(--r-sm);
+  padding:10px 16px;font-size:13px;font-weight:600;
+  cursor:pointer;transition:all .15s;
+  display:flex;align-items:center;gap:6px;
+  box-shadow:0 0 20px var(--accent-glow);
+  font-family:'Inter',sans-serif;
+}
+.scan-add-btn:hover{background:var(--accent2);box-shadow:0 0 30px var(--accent-glow);transform:translateY(-1px)}
+.scan-add-btn:active{transform:scale(.95)}
+.scan-add-btn svg{width:14px;height:14px}
+
+.scan-reset-btn{
+  background:transparent;color:var(--text4);
+  border:1px solid var(--border);border-radius:var(--r-sm);
+  padding:6px 12px;font-size:11.5px;font-weight:500;
+  cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;
+}
+.scan-reset-btn:hover{color:var(--red);border-color:var(--red);background:var(--red-dim)}
+
+.scan-timeline{margin-top:4px}
+.scan-timeline-label{font-size:10.5px;color:var(--text4);margin-bottom:6px}
+.scan-timeline-log{
+  max-height:90px;overflow-y:auto;
+  display:flex;flex-direction:column;gap:3px;
+}
+.scan-log-entry{
+  display:flex;align-items:center;gap:8px;
+  padding:4px 8px;background:var(--bg5);border-radius:var(--r-xs);
+  font-size:11.5px;color:var(--text2);
+}
+.scan-log-time{color:var(--text4);min-width:48px}
+.scan-log-flag{font-size:13px}
+.scan-sparkline{height:44px;margin-top:10px}
+
+/* ── HISTORY ── */
+.hist-toolbar{display:flex;gap:8px;margin-bottom:16px;align-items:center}
+.hist-search{
+  flex:1;padding:8px 12px 8px 34px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r-sm);color:var(--text);font-size:13px;
+  outline:none;font-family:'Inter',sans-serif;position:relative;
+}
+.hist-search-wrap{flex:1;position:relative}
+.hist-search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text4);pointer-events:none}
+.hist-search:focus{border-color:var(--accent2)}
+.hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.hcard{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);overflow:hidden;cursor:pointer;
+  transition:border-color .15s,box-shadow .15s,transform .12s;
+}
+.hcard:hover{border-color:var(--border2);box-shadow:0 4px 20px rgba(0,0,0,.4);transform:translateY(-1px)}
+.hcard.active{border-color:var(--accent2);box-shadow:0 0 0 2px var(--accent-dim)}
+.hcard-top{display:flex;gap:12px;padding:14px 14px 10px;align-items:center}
+.hcard-thumb{
+  width:52px;height:52px;flex-shrink:0;
+  background:#fff;border-radius:6px;
+  border:1px solid var(--border);overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+}
+.hcard-thumb canvas{width:52px !important;height:52px !important}
+.hcard-info{flex:1;min-width:0}
+.hcard-domain{font-size:13.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcard-url{font-size:11px;color:var(--text4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.hcard-time{font-size:11px;color:var(--text4);margin-top:4px}
+.hcard-bottom{
+  padding:8px 14px 12px;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.scan-pill{
+  display:inline-flex;align-items:center;gap:4px;
+  background:var(--accent-dim);color:var(--accent3);
+  font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px;
+  border:1px solid rgba(124,58,237,.2);
+}
+.scan-pill svg{width:10px;height:10px}
+.hcard-actions{display:flex;gap:4px}
+
+/* ── ANALYTICS ── */
+.analytics-layout{display:flex;flex-direction:column;gap:16px}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden;
+}
+.kpi::after{
+  content:'';position:absolute;top:0;right:0;width:60px;height:60px;
+  border-radius:50%;transform:translate(20px,-20px);opacity:.08;
+}
+.kpi-codes::after{background:var(--accent)}
+.kpi-scans::after{background:var(--green)}
+.kpi-avg::after{background:var(--amber)}
+.kpi-rate::after{background:var(--cyan)}
+.kpi-label{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--text4);margin-bottom:8px}
+.kpi-val{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;line-height:1;color:var(--text)}
+.kpi-delta{font-size:11.5px;margin-top:6px;display:flex;align-items:center;gap:4px}
+.kpi-delta.up{color:var(--green)}
+.kpi-delta.neu{color:var(--text4)}
+.kpi-delta svg{width:12px;height:12px}
+.kpi-bar{height:3px;border-radius:3px;margin-top:10px;background:var(--bg5)}
+.kpi-bar-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.kpi-codes .kpi-bar-fill{background:var(--accent2)}
+.kpi-scans .kpi-bar-fill{background:var(--green)}
+.kpi-avg .kpi-bar-fill{background:var(--amber)}
+.kpi-rate .kpi-bar-fill{background:var(--cyan)}
+
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+.charts-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chart-wrap{height:230px;position:relative}
+
+/* LEADERBOARD */
+.lb-row{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 14px;border-bottom:1px solid var(--border);
+  transition:background .1s;
+}
+.lb-row:last-child{border-bottom:none}
+.lb-row:hover{background:var(--bg4)}
+.lb-rank{
+  font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;
+  width:22px;text-align:center;flex-shrink:0;
+}
+.lb-rank.gold{color:#f59e0b}
+.lb-rank.silver{color:#94a3b8}
+.lb-rank.bronze{color:#92400e}
+.lb-rank.other{color:var(--text4)}
+.lb-thumb{width:30px;height:30px;background:#fff;border-radius:4px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.lb-thumb canvas{width:30px !important;height:30px !important}
+.lb-info{flex:1;min-width:0}
+.lb-domain{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-url{font-size:11px;color:var(--text4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-meta{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.lb-scans{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;color:var(--accent3)}
+.lb-bar-wrap{width:80px;height:4px;background:var(--bg5);border-radius:4px}
+.lb-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s ease}
+
+/* HEATMAP */
+.heatmap-grid{
+  display:grid;
+  grid-template-columns:repeat(24,1fr);
+  grid-template-rows:repeat(7,1fr);
+  gap:2px;margin-top:4px;
+}
+.hm-cell{
+  aspect-ratio:1;border-radius:2px;
+  background:var(--bg5);transition:opacity .2s;cursor:default;
+}
+.hm-cell:hover{outline:1px solid var(--accent3)}
+.hm-labels-days{display:grid;grid-template-rows:repeat(7,1fr);gap:2px;margin-right:6px;padding-top:0}
+.hm-label{font-size:9px;color:var(--text4);display:flex;align-items:center;height:100%}
+.hm-legend{display:flex;align-items:center;gap:6px;margin-top:8px;justify-content:flex-end}
+.hm-leg-label{font-size:10px;color:var(--text4)}
+.hm-leg-swatches{display:flex;gap:2px}
+.hm-leg-swatch{width:12px;height:12px;border-radius:2px}
+
+/* GEO TABLE */
+.geo-table{width:100%;border-collapse:collapse}
+.geo-table th{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text4);padding:8px 0;text-align:left;border-bottom:1px solid var(--border)}
+.geo-table td{padding:9px 0;font-size:13px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
+.geo-table tr:last-child td{border-bottom:none}
+.geo-bar-wrap{height:4px;background:var(--bg5);border-radius:4px;flex:1}
+.geo-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--cyan),var(--accent2));transition:width .4s ease}
+.geo-pct{font-size:11px;font-weight:600;color:var(--text4);min-width:32px;text-align:right}
+
+/* REALTIME FEED */
+.rtfeed{max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.rtfeed-entry{
+  display:flex;align-items:center;gap:10px;
+  padding:6px 10px;background:var(--bg4);border-radius:var(--r-xs);
+  border:1px solid var(--border);animation:fadeSlide .3s ease;
+}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.rtfeed-flag{font-size:16px;flex-shrink:0}
+.rtfeed-info{flex:1;min-width:0}
+.rtfeed-domain{font-size:12.5px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rtfeed-loc{font-size:11px;color:var(--text4)}
+.rtfeed-time{font-size:11px;color:var(--text4);flex-shrink:0}
+.rtfeed-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 6px var(--green)}
+
+/* TIMELINE CHART */
+.timeline-filters{display:flex;gap:4px;margin-bottom:14px}
+.tl-filter{
+  padding:4px 10px;font-size:11.5px;font-weight:500;
+  border:1px solid var(--border);border-radius:var(--r-xs);
+  background:transparent;color:var(--text3);cursor:pointer;transition:all .12s;
+  font-family:'Inter',sans-serif;
+}
+.tl-filter:hover{color:var(--text);border-color:var(--border2)}
+.tl-filter.active{background:var(--accent-dim);border-color:rgba(124,58,237,.3);color:var(--accent3)}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .18s;backdrop-filter:blur(4px)}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:400px;box-shadow:var(--sh-lg)}
+.modal-h{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-size:14px;font-weight:600}
+.modal-b{padding:18px}
+.modal-f{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.modal-qr-center{display:flex;justify-content:center;margin-bottom:14px}
+.modal-qr-center canvas{border-radius:6px;border:1px solid var(--border)}
+.modal-url-box{background:var(--bg4);border-radius:var(--r-xs);padding:10px 12px;font-size:12px;color:var(--text3);word-break:break-all;border:1px solid var(--border)}
+
+/* TOAST */
+.toasts{position:fixed;bottom:22px;right:22px;z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{
+  background:var(--bg3);border:1px solid var(--border2);
+  color:var(--text);padding:10px 14px;border-radius:var(--r);
+  font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;
+  box-shadow:0 8px 24px rgba(0,0,0,.4);
+  animation:tin .2s ease;pointer-events:all;
+}
+.toast.ok{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
+.toast.err{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)}
+.toast.info{border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.08)}
+@keyframes tin{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
+@keyframes tout{to{opacity:0;transform:translateX(16px)}}
+.toast.out{animation:tout .18s ease forwards}
+
+/* EMPTY */
+.empty{text-align:center;padding:56px 20px;color:var(--text4)}
+.empty svg{width:48px;height:48px;opacity:.12;margin:0 auto 12px;display:block}
+.empty h3{font-size:14px;font-weight:600;color:var(--text3);margin-bottom:4px}
+.empty p{font-size:12.5px;max-width:260px;margin:0 auto}
+
+/* UTILS */
+.mt8{margin-top:8px}
+.mt12{margin-top:12px}
+.mt16{margin-top:16px}
+.gap12{display:flex;flex-direction:column;gap:12px}
+.sep{height:1px;background:var(--border);margin:16px 0}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.chip-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.chip-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.chip-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)}
 </style>
 </head>
 <body>
 
 <!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-mark">
-      <div class="logo-icon">
-        <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm2 2v3h3V5H5zm9-2h7v7h-7V3zm2 2v3h3V5h-3zM3 14h7v7H3v-7zm2 2v3h3v-3H5zm11 1h2v2h-2v-2zm2-2h2v2h-2v-2zm-4 0h2v2h-2v-2zm2 4h2v2h-2v-2zm2 2h2v2h-2v-2zm-4-2h2v2h-2v-2z"/></svg>
-      </div>
-      <div>
-        <div class="logo-name">QR<span>Studio</span></div>
-      </div>
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm2 2v3h3V5H5zm9-2h7v7h-7V3zm2 2v3h3V5h-3zM3 14h7v7H3v-7zm2 2v3h3v-3H5zm11 1h2v2h-2v-2zm2-2h2v2h-2v-2zm-4 0h2v2h-2v-2zm2 4h2v2h-2v-2zm2 2h2v2h-2v-2zm-4-2h2v2h-2v-2z"/></svg>
+    </div>
+    <div>
+      <div class="sb-logo-name">QR Studio</div>
+      <div class="sb-logo-tag">Pro Analytics</div>
     </div>
   </div>
 
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Основне</div>
-    <div class="nav-item active" onclick="switchView('generator', this)">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg>
+  <nav class="sb-nav">
+    <div class="sb-section">Основне</div>
+    <div class="sb-item active" data-view="generator">
+      <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="3" height="3"/><rect x="18" y="14" width="3" height="3"/><rect x="14" y="18" width="3" height="3"/><rect x="18" y="18" width="3" height="3"/></svg>
       Генератор
     </div>
-    <div class="nav-item" onclick="switchView('history', this)">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+    <div class="sb-item" data-view="history">
+      <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
       Мої QR-коди
-      <span class="nav-badge" id="hist-badge">0</span>
+      <span class="sb-badge" id="nav-badge">0</span>
     </div>
 
-    <div class="nav-section-label" style="margin-top:8px;">Аналітика</div>
-    <div class="nav-item" onclick="switchView('analytics', this)">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Загальна статистика
+    <div class="sb-section" style="margin-top:4px">Аналітика</div>
+    <div class="sb-item" data-view="analytics">
+      <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Дашборд
     </div>
-    <div class="nav-item" onclick="switchView('locations', this)">
-      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+    <div class="sb-item" data-view="realtime">
+      <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      Реальний час
+      <span class="sb-badge" id="rt-badge" style="background:var(--green)">●</span>
+    </div>
+    <div class="sb-item" data-view="geo">
+      <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
       Географія
     </div>
   </nav>
 
-  <div class="sidebar-footer">
-    <div class="sidebar-stat-row">
-      <div class="s-stat">
-        <div class="s-stat-n" id="sb-codes">0</div>
-        <div class="s-stat-l">QR-кодів</div>
-      </div>
-      <div class="s-stat">
-        <div class="s-stat-n" id="sb-scans">0</div>
-        <div class="s-stat-l">Сканувань</div>
-      </div>
+  <div class="sb-footer">
+    <div class="sb-stats">
+      <div class="sb-stat"><div class="sb-stat-n" id="sb-codes">0</div><div class="sb-stat-l">QR-кодів</div></div>
+      <div class="sb-stat"><div class="sb-stat-n" id="sb-scans">0</div><div class="sb-stat-l">Сканувань</div></div>
     </div>
   </div>
 </aside>
 
 <!-- MAIN -->
 <div class="main">
-  <!-- TOPBAR -->
   <header class="topbar">
-    <div class="topbar-title" id="topbar-title">Генератор QR-кодів</div>
+    <div class="topbar-left">
+      <span class="topbar-title" id="tb-title">Генератор QR-кодів</span>
+      <div class="topbar-dot"></div>
+      <span class="topbar-sub" id="tb-sub">Введіть URL і налаштуйте стиль</span>
+    </div>
     <div class="topbar-actions">
-      <button class="btn btn-ghost" onclick="exportAll()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Експорт CSV
+      <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        CSV
       </button>
-      <button class="btn btn-accent" onclick="switchView('generator', document.querySelector(\'.nav-item\'))">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <button class="btn btn-accent btn-sm" onclick="navTo('generator')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Новий QR
       </button>
     </div>
   </header>
 
-  <div class="content">
+  <div class="content-area">
 
     <!-- ═══ GENERATOR ═══ -->
     <div class="view active" id="view-generator">
       <div class="gen-layout">
-        <!-- Left: settings -->
-        <div>
+        <div class="gap12">
+
           <!-- URL -->
-          <div class="card" style="margin-bottom:16px;">
+          <div class="card">
             <div class="card-header">
-              <div>
-                <div class="card-title">URL адреса</div>
-                <div class="card-subtitle">Введіть посилання — QR оновлюється миттєво</div>
-              </div>
+              <div><div class="card-title">URL-адреса</div><div class="card-subtitle">QR оновлюється миттєво при наборі</div></div>
             </div>
             <div class="card-body">
-              <div class="url-field">
-                <div class="url-input-wrap">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                  <input class="url-input" id="url-inp" type="url" placeholder="https://example.com" autocomplete="off" />
+              <div class="url-row">
+                <div class="url-wrap">
+                  <svg class="url-wrap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  <input class="url-inp" id="url-inp" type="url" placeholder="https://example.com" autocomplete="off"/>
                 </div>
-                <button class="btn btn-accent" onclick="generateQR()">Згенерувати</button>
+                <button class="btn btn-accent" onclick="generateQR(false)">Згенерувати</button>
               </div>
             </div>
           </div>
 
-          <!-- Options -->
+          <!-- SETTINGS -->
           <div class="card">
-            <div class="card-header">
-              <div class="card-title">Налаштування</div>
-            </div>
+            <div class="card-header"><div class="card-title">Налаштування</div></div>
             <div class="card-body">
-              <div class="option-tabs">
-                <button class="opt-tab active" onclick="switchOptTab('style', this)">Стиль</button>
-                <button class="opt-tab" onclick="switchOptTab('logo', this)">Логотип</button>
-                <button class="opt-tab" onclick="switchOptTab('export', this)">Експорт</button>
+              <div class="opt-tabs">
+                <button class="opt-tab active" onclick="optTab('style',this)">Стиль</button>
+                <button class="opt-tab" onclick="optTab('logo',this)">Логотип</button>
+                <button class="opt-tab" onclick="optTab('export',this)">Експорт</button>
               </div>
 
-              <!-- STYLE TAB -->
-              <div class="opt-panel active" id="opt-style">
-                <div class="form-grid">
-                  <div class="form-group">
-                    <label>Корекція помилок</label>
+              <!-- style -->
+              <div class="opt-panel active" id="op-style">
+                <div class="fg">
+                  <div class="fl"><label>Корекція</label>
                     <select id="ecl" onchange="liveUpdate()">
                       <option value="L">L — мінімальна</option>
                       <option value="M" selected>M — стандартна</option>
@@ -1054,91 +646,76 @@ body {
                       <option value="H">H — максимальна</option>
                     </select>
                   </div>
-                  <div class="form-group">
-                    <label>Стиль модулів</label>
-                    <select id="mod-style" onchange="liveUpdate()">
-                      <option value="square">Квадрати</option>
-                      <option value="round">Округлі</option>
-                      <option value="dot">Точки</option>
+                  <div class="fl"><label>Модулі</label>
+                    <select id="mod" onchange="liveUpdate()">
+                      <option value="sq">Квадрати</option>
+                      <option value="rd">Округлі</option>
+                      <option value="dt">Точки</option>
                     </select>
                   </div>
-                  <div class="form-group">
-                    <label>Колір QR</label>
-                    <div class="color-picker-row">
-                      <input type="color" id="fg-color" value="#0d0d0d" oninput="document.getElementById('fg-hex').textContent=this.value; liveUpdate();" />
+                  <div class="fl"><label>Колір QR</label>
+                    <div class="color-row" style="position:relative">
+                      <div class="color-swatch" style="position:relative">
+                        <div class="color-swatch-preview" id="fg-preview" style="background:#0d0d0d"></div>
+                        <input type="color" id="fg-color" value="#0d0d0d" style="position:absolute;opacity:0;inset:0;cursor:pointer;" oninput="syncColor('fg')"/>
+                      </div>
                       <span class="color-hex" id="fg-hex">#0d0d0d</span>
                     </div>
                   </div>
-                  <div class="form-group">
-                    <label>Колір фону</label>
-                    <div class="color-picker-row">
-                      <input type="color" id="bg-color" value="#ffffff" oninput="document.getElementById('bg-hex').textContent=this.value; liveUpdate();" />
+                  <div class="fl"><label>Фон</label>
+                    <div class="color-row" style="position:relative">
+                      <div class="color-swatch" style="position:relative">
+                        <div class="color-swatch-preview" id="bg-preview" style="background:#ffffff"></div>
+                        <input type="color" id="bg-color" value="#ffffff" style="position:absolute;opacity:0;inset:0;cursor:pointer;" oninput="syncColor('bg')"/>
+                      </div>
                       <span class="color-hex" id="bg-hex">#ffffff</span>
                     </div>
                   </div>
-                  <div class="form-group" style="grid-column:1/-1;">
-                    <label>Розмір: <span id="sz-label">256px</span></label>
-                    <div class="range-row">
-                      <input type="range" id="qr-size" min="128" max="512" value="256" step="8" oninput="document.getElementById('sz-label').textContent=this.value+'px'; liveUpdate();" />
-                    </div>
+                  <div class="fl" style="grid-column:1/-1"><label>Розмір: <span id="sz-lbl">256px</span></label>
+                    <div class="range-wrap"><input type="range" id="qr-sz" min="128" max="512" value="256" step="8" oninput="document.getElementById('sz-lbl').textContent=this.value+'px';liveUpdate()"/></div>
                   </div>
-                  <div class="form-group" style="grid-column:1/-1;">
-                    <label>Відступ: <span id="pad-label">4</span></label>
-                    <div class="range-row">
-                      <input type="range" id="qr-pad" min="0" max="10" value="4" step="1" oninput="document.getElementById('pad-label').textContent=this.value; liveUpdate();" />
-                    </div>
+                  <div class="fl" style="grid-column:1/-1"><label>Відступ: <span id="pad-lbl">4</span></label>
+                    <div class="range-wrap"><input type="range" id="qr-pad" min="0" max="12" value="4" step="1" oninput="document.getElementById('pad-lbl').textContent=this.value;liveUpdate()"/></div>
                   </div>
                 </div>
               </div>
 
-              <!-- LOGO TAB -->
-              <div class="opt-panel" id="opt-logo">
-                <div id="logo-upload-area-wrap">
-                  <div class="logo-upload-area" id="logo-drop">
-                    <input type="file" accept="image/*" id="logo-file" onchange="handleLogoUpload(this)" />
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-                    <p>Перетягніть зображення або натисніть</p>
-                    <span>PNG, JPG, SVG до 2 МБ</span>
+              <!-- logo -->
+              <div class="opt-panel" id="op-logo">
+                <div id="logo-drop-area">
+                  <div class="logo-drop">
+                    <input type="file" accept="image/*" id="logo-file" onchange="onLogoFile(this)"/>
+                    <svg class="logo-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <p>Перетягніть або виберіть файл</p>
+                    <span>PNG, SVG, JPG · до 2 МБ</span>
                   </div>
                 </div>
-                <div id="logo-preview-wrap" style="display:none;">
-                  <div class="logo-preview-row">
-                    <img id="logo-preview-img" class="logo-preview-img" src="" alt="logo" />
-                    <span class="logo-preview-name" id="logo-preview-name"></span>
-                    <button class="icon-btn" onclick="removeLogo()" title="Видалити">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                <div id="logo-info-area" style="display:none">
+                  <div class="logo-info">
+                    <img class="logo-thumb" id="logo-thumb" src="" alt=""/>
+                    <span class="logo-name" id="logo-name"></span>
+                    <button class="btn btn-icon btn-sm" onclick="clearLogo()" title="Видалити">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
                     </button>
                   </div>
-                  <div class="logo-size-row form-group">
-                    <label>Розмір логотипу: <span id="logo-size-label">22%</span></label>
-                    <input type="range" id="logo-size" min="10" max="35" value="22" step="1" oninput="document.getElementById('logo-size-label').textContent=this.value+'%'; liveUpdate();" />
+                  <div class="fl mt8"><label>Розмір логотипу: <span id="lsz-lbl">22%</span></label>
+                    <input type="range" id="logo-sz" min="10" max="35" value="22" step="1" oninput="document.getElementById('lsz-lbl').textContent=this.value+'%';liveUpdate()"/>
                   </div>
                 </div>
               </div>
 
-              <!-- EXPORT TAB -->
-              <div class="opt-panel" id="opt-export">
-                <div class="form-grid">
-                  <div class="form-group">
-                    <label>Формат файлу</label>
-                    <select id="export-fmt">
-                      <option value="png">PNG (растр)</option>
-                      <option value="svg">SVG (вектор)</option>
-                      <option value="jpeg">JPEG</option>
-                    </select>
+              <!-- export -->
+              <div class="opt-panel" id="op-export">
+                <div class="fg">
+                  <div class="fl"><label>Формат</label>
+                    <select id="exp-fmt"><option value="png">PNG</option><option value="svg">SVG</option><option value="jpeg">JPEG</option></select>
                   </div>
-                  <div class="form-group">
-                    <label>Якість / розмір</label>
-                    <select id="export-size">
-                      <option value="256">256 × 256</option>
-                      <option value="512" selected>512 × 512</option>
-                      <option value="1024">1024 × 1024</option>
-                      <option value="2048">2048 × 2048</option>
-                    </select>
+                  <div class="fl"><label>Розмір</label>
+                    <select id="exp-sz"><option value="256">256×256</option><option value="512" selected>512×512</option><option value="1024">1024×1024</option><option value="2048">2048×2048</option></select>
                   </div>
                 </div>
-                <button class="btn btn-accent" style="width:100%;justify-content:center;margin-top:12px;" onclick="downloadQR()">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <button class="btn btn-accent mt12" style="width:100%;justify-content:center" onclick="downloadQR()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                   Завантажити
                 </button>
               </div>
@@ -1146,52 +723,57 @@ body {
           </div>
         </div>
 
-        <!-- Right: preview -->
-        <div class="preview-panel">
+        <!-- RIGHT: preview + scan box -->
+        <div class="preview-sticky">
           <div class="card">
-            <div class="card-header">
-              <div class="card-title">Попередній перегляд</div>
-            </div>
+            <div class="card-header"><div class="card-title">Попередній перегляд</div></div>
             <div class="card-body">
-              <div class="qr-canvas-container" id="qr-container">
-                <div class="qr-empty-state" id="qr-empty">
+              <div class="qr-wrap" id="qr-wrap">
+                <div class="qr-empty" id="qr-empty">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
                   <p>Введіть URL<br>для генерації</p>
                 </div>
-                <div id="qr-output"></div>
-                <canvas id="qr-final" style="display:none;border-radius:6px;"></canvas>
+                <canvas id="qr-canvas-final"></canvas>
               </div>
-              <div class="qr-domain-chip" id="qr-chip"></div>
-              <div class="preview-actions" id="preview-actions" style="display:none;">
-                <button class="btn btn-ghost" onclick="copyURL()">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+              <div class="qr-url-label" id="qr-url-label"></div>
+              <div id="preview-btns" style="display:none" class="preview-btns">
+                <button class="btn btn-ghost btn-sm" onclick="copyURL()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                   URL
                 </button>
-                <button class="btn btn-ghost" onclick="downloadQR()">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <button class="btn btn-ghost btn-sm" onclick="downloadQR()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                   PNG
                 </button>
-                <button class="btn btn-accent" onclick="shareQR()">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <button class="btn btn-accent btn-sm" onclick="shareQR()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                   Поділитись
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- Scan counter -->
+          <!-- SCAN BOX -->
           <div class="scan-box" id="scan-box">
             <div class="scan-box-top">
-              <div>
-                <div class="scan-number" id="scan-n">0</div>
-                <div class="scan-label">
-                  <span class="pulse-ring"></span>&nbsp; сканувань зареєстровано
+              <div class="scan-counter-col">
+                <div class="scan-big" id="scan-big">0</div>
+                <div class="scan-label-row">
+                  <div class="scan-dot"></div>
+                  <span class="scan-label">сканувань</span>
                 </div>
               </div>
-              <button class="scan-btn" onclick="addScan()">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Додати скан
-              </button>
+              <div class="scan-btn-col">
+                <button class="scan-add-btn" id="scan-add-btn" onclick="addScan()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Скануванн
+                </button>
+                <button class="scan-reset-btn" onclick="resetScans()">Скинути</button>
+              </div>
+            </div>
+            <div class="scan-timeline">
+              <div class="scan-timeline-label">Останні сканування</div>
+              <div class="scan-timeline-log" id="scan-log"></div>
             </div>
             <canvas class="scan-sparkline" id="sparkline"></canvas>
           </div>
@@ -1201,759 +783,967 @@ body {
 
     <!-- ═══ HISTORY ═══ -->
     <div class="view" id="view-history">
-      <div class="history-grid" id="history-grid">
-        <div class="empty-state" style="grid-column:1/-1;">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-          <h3>Порожня історія</h3>
-          <p>Згенеруйте QR-код, щоб він тут з'явився</p>
+      <div class="hist-toolbar">
+        <div class="hist-search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="hist-search" id="hist-search" placeholder="Пошук по URL або домену…" oninput="renderHistory()"/>
         </div>
+        <button class="btn btn-ghost btn-sm" onclick="clearAll()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          Очистити всі
+        </button>
       </div>
+      <div class="hist-grid" id="hist-grid"></div>
     </div>
 
     <!-- ═══ ANALYTICS ═══ -->
     <div class="view" id="view-analytics">
-      <div class="analytics-grid">
-        <div class="metric-card">
-          <div class="metric-label">Всього QR</div>
-          <div class="metric-value" id="m-codes">0</div>
-          <div class="metric-delta">—</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Сканувань</div>
-          <div class="metric-value" id="m-scans">0</div>
-          <div class="metric-delta" id="m-scans-d">—</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Сер. на QR</div>
-          <div class="metric-value" id="m-avg">—</div>
-          <div class="metric-delta">—</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Лідер</div>
-          <div class="metric-value" style="font-size:16px;" id="m-top">—</div>
-          <div class="metric-delta" id="m-top-n">—</div>
-        </div>
-      </div>
+      <div class="analytics-layout">
 
-      <div class="analytics-charts">
-        <div class="card">
-          <div class="card-header"><div class="card-title">Сканування по QR-кодах</div></div>
-          <div class="card-body">
-            <div class="chart-container">
-              <canvas id="bar-chart"></canvas>
+        <div class="kpi-row">
+          <div class="kpi kpi-codes">
+            <div class="kpi-label">QR-кодів</div>
+            <div class="kpi-val" id="kpi-codes">0</div>
+            <div class="kpi-delta neu" id="kpi-codes-d">— всього</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" id="kpi-codes-bar" style="width:0%"></div></div>
+          </div>
+          <div class="kpi kpi-scans">
+            <div class="kpi-label">Сканувань</div>
+            <div class="kpi-val" id="kpi-scans">0</div>
+            <div class="kpi-delta up" id="kpi-scans-d">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+              —
             </div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" id="kpi-scans-bar" style="width:0%"></div></div>
+          </div>
+          <div class="kpi kpi-avg">
+            <div class="kpi-label">Сер. на QR</div>
+            <div class="kpi-val" id="kpi-avg">—</div>
+            <div class="kpi-delta neu" id="kpi-avg-d">— середнє</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" id="kpi-avg-bar" style="width:0%"></div></div>
+          </div>
+          <div class="kpi kpi-rate">
+            <div class="kpi-label">Активних</div>
+            <div class="kpi-val" id="kpi-rate">—</div>
+            <div class="kpi-delta neu" id="kpi-rate-d">з активністю</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" id="kpi-rate-bar" style="width:0%"></div></div>
           </div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">Топ-5 за активністю</div></div>
-          <div class="card-body">
-            <div class="chart-container">
-              <canvas id="pie-chart"></canvas>
+
+        <div class="charts-row">
+          <!-- Timeseries -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">Сканування в часі</div>
+              <div class="timeline-filters">
+                <button class="tl-filter active" onclick="setTimeRange(7,this)">7д</button>
+                <button class="tl-filter" onclick="setTimeRange(14,this)">14д</button>
+                <button class="tl-filter" onclick="setTimeRange(30,this)">30д</button>
+              </div>
+            </div>
+            <div class="card-body"><div class="chart-wrap"><canvas id="timeline-chart"></canvas></div></div>
+          </div>
+          <!-- Leaderboard -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">Топ QR-коди</div></div>
+            <div id="leaderboard"></div>
+          </div>
+        </div>
+
+        <div class="charts-row2">
+          <!-- Donut -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">Розподіл по кодах</div></div>
+            <div class="card-body"><div class="chart-wrap"><canvas id="donut-chart"></canvas></div></div>
+          </div>
+          <!-- Heatmap -->
+          <div class="card">
+            <div class="card-header"><div class="card-title">Активність (168 годин)</div></div>
+            <div class="card-body">
+              <div style="display:flex;gap:6px">
+                <div class="hm-labels-days">
+                  <div class="hm-label">Нд</div><div class="hm-label">Пн</div><div class="hm-label">Вт</div>
+                  <div class="hm-label">Ср</div><div class="hm-label">Чт</div><div class="hm-label">Пт</div><div class="hm-label">Сб</div>
+                </div>
+                <div style="flex:1">
+                  <div class="heatmap-grid" id="heatmap"></div>
+                  <div class="hm-legend">
+                    <span class="hm-leg-label">Менше</span>
+                    <div class="hm-leg-swatches" id="hm-swatches"></div>
+                    <span class="hm-leg-label">Більше</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ═══ LOCATIONS ═══ -->
-    <div class="view" id="view-locations">
-      <div class="analytics-grid" style="grid-template-columns:repeat(3,1fr);">
-        <div class="metric-card">
-          <div class="metric-label">Країн</div>
-          <div class="metric-value" id="loc-countries">0</div>
-          <div class="metric-delta">—</div>
+    <!-- ═══ REALTIME ═══ -->
+    <div class="view" id="view-realtime">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Стрічка сканувань</div>
+            <span class="chip chip-green">● Live</span>
+          </div>
+          <div class="card-body">
+            <div class="rtfeed" id="rtfeed">
+              <div style="text-align:center;padding:24px 0;color:var(--text4);font-size:13px">Ще немає сканувань</div>
+            </div>
+          </div>
         </div>
-        <div class="metric-card">
-          <div class="metric-label">Топ країна</div>
-          <div class="metric-value" style="font-size:16px;" id="loc-top">—</div>
-          <div class="metric-delta">—</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Всього скан.</div>
-          <div class="metric-value" id="loc-total">0</div>
-          <div class="metric-delta">—</div>
-        </div>
-      </div>
-
-      <div class="card" style="margin-top:16px;">
-        <div class="card-header">
-          <div class="card-title">Географія сканувань</div>
-          <div class="card-subtitle">Симульовані дані — у реальному додатку підключіть IP-геолокацію</div>
-        </div>
-        <div class="card-body">
-          <table class="loc-table">
-            <thead>
-              <tr>
-                <th>Країна</th>
-                <th>Сканувань</th>
-                <th style="width:140px;">Частка</th>
-                <th style="text-align:right;">%</th>
-              </tr>
-            </thead>
-            <tbody id="loc-table-body">
-              <tr><td colspan="4" style="text-align:center;color:var(--ink4);padding:24px 0;">Немає даних — спочатку зареєструйте сканування</td></tr>
-            </tbody>
-          </table>
+        <div class="card">
+          <div class="card-header"><div class="card-title">Статистика в реальному часі</div></div>
+          <div class="card-body gap12">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <div class="kpi kpi-scans" style="padding:12px 14px">
+                <div class="kpi-label">За останню годину</div>
+                <div class="kpi-val" id="rt-hour">0</div>
+              </div>
+              <div class="kpi kpi-codes" style="padding:12px 14px">
+                <div class="kpi-label">За сьогодні</div>
+                <div class="kpi-val" id="rt-today">0</div>
+              </div>
+            </div>
+            <div class="card" style="border:none;background:var(--bg4);padding:14px">
+              <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text4);margin-bottom:10px">Топ QR за сьогодні</div>
+              <div id="rt-top-list"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-  </div><!-- /content -->
+    <!-- ═══ GEO ═══ -->
+    <div class="view" id="view-geo">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+        <div class="kpi kpi-codes"><div class="kpi-label">Країн</div><div class="kpi-val" id="geo-countries">0</div><div class="kpi-delta neu">виявлено</div></div>
+        <div class="kpi kpi-scans"><div class="kpi-label">Топ країна</div><div class="kpi-val" style="font-size:16px" id="geo-top">—</div><div class="kpi-delta neu" id="geo-top-n">—</div></div>
+        <div class="kpi kpi-avg"><div class="kpi-label">Всього скан.</div><div class="kpi-val" id="geo-total">0</div><div class="kpi-delta neu">зі всіх регіонів</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Сканування по країнах</div><div class="card-subtitle">На основі зареєстрованих сканувань</div></div>
+          <div class="card-body">
+            <table class="geo-table">
+              <thead><tr><th>Країна</th><th>Скан.</th><th>Частка</th><th style="text-align:right">%</th></tr></thead>
+              <tbody id="geo-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><div class="card-title">По QR-кодах</div></div>
+          <div class="card-body"><div class="chart-wrap"><canvas id="geo-bar-chart"></canvas></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-area -->
 </div><!-- /main -->
 
+<!-- DIV for QRCode.js (hidden) -->
+<div id="qr-raw-div" style="position:absolute;left:-9999px;top:-9999px;pointer-events:none;overflow:hidden;width:1px;height:1px"></div>
+
 <!-- MODAL -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<div class="overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title" id="modal-title">QR-код</div>
-      <button class="modal-close" onclick="closeModal()">
+    <div class="modal-h">
+      <span class="modal-title" id="modal-ttl">QR-код</span>
+      <button class="btn btn-icon btn-sm" onclick="closeModal()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
-    <div class="modal-body">
-      <div class="modal-qr-wrap"><canvas id="modal-canvas" width="200" height="200"></canvas></div>
-      <div class="modal-url" id="modal-url"></div>
+    <div class="modal-b">
+      <div class="modal-qr-center"><canvas id="modal-canvas" width="200" height="200"></canvas></div>
+      <div class="modal-url-box" id="modal-url"></div>
     </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="modalDownload()">Завантажити PNG</button>
-      <button class="btn btn-accent" onclick="closeModal()">Закрити</button>
+    <div class="modal-f">
+      <button class="btn btn-ghost btn-sm" onclick="modalDL()">Завантажити</button>
+      <button class="btn btn-accent btn-sm" onclick="closeModal()">Закрити</button>
     </div>
   </div>
 </div>
 
-<!-- TOAST CONTAINER -->
-<div class="toast-container" id="toast-container"></div>
+<div class="toasts" id="toasts"></div>
 
 <script>
-/* ═══════════════════════════════
-   STATE
-═══════════════════════════════ */
-let DB = JSON.parse(localStorage.getItem('qr_studio_v2') || '{"items":[]}');
+/* ═══════════ STATE ═══════════ */
+let DB = JSON.parse(localStorage.getItem('qrs_pro') || '{"items":[]}');
 let currentId = null;
-let logoDataURL = null;
-let liveTimer = null;
-let barChartInst = null;
-let pieChartInst = null;
+let logoURL = null;
+let liveT = null;
+let timeRange = 7;
+let modalItemId = null;
 
-const LOCATIONS = [
-  { flag: '🇺🇦', name: 'Україна' },
-  { flag: '🇵🇱', name: 'Польща' },
-  { flag: '🇩🇪', name: 'Німеччина' },
-  { flag: '🇺🇸', name: 'США' },
-  { flag: '🇬🇧', name: 'Великобританія' },
-  { flag: '🇨🇿', name: 'Чехія' },
-  { flag: '🇫🇷', name: 'Франція' },
-  { flag: '🇸🇰', name: 'Словаччина' },
+// chart instances
+let tlChart = null, donutChart = null, geoBarChart = null;
+
+const GEOS = [
+  {flag:'🇺🇦',name:'Україна',w:38},{flag:'🇵🇱',name:'Польща',w:16},
+  {flag:'🇩🇪',name:'Німеччина',w:12},{flag:'🇺🇸',name:'США',w:10},
+  {flag:'🇬🇧',name:'Велика Британія',w:8},{flag:'🇨🇿',name:'Чехія',w:7},
+  {flag:'🇫🇷',name:'Франція',w:5},{flag:'🇸🇰',name:'Словаччина',w:4},
 ];
 
-function save() { localStorage.setItem('qr_studio_v2', JSON.stringify(DB)); }
-function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function save(){ localStorage.setItem('qrs_pro', JSON.stringify(DB)); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
-/* ═══════════════════════════════
-   NAVIGATION
-═══════════════════════════════ */
-const VIEW_TITLES = {
-  generator: 'Генератор QR-кодів',
-  history: 'Мої QR-коди',
-  analytics: 'Загальна статистика',
-  locations: 'Географія сканувань',
+/* ═══════════ NAV ═══════════ */
+const VIEW_META = {
+  generator:['Генератор QR-кодів','Введіть URL і налаштуйте стиль'],
+  history:['Мої QR-коди','Усі створені QR-коди'],
+  analytics:['Аналітика','Статистика сканувань'],
+  realtime:['Реальний час','Живі оновлення'],
+  geo:['Географія','Розподіл по країнах'],
 };
 
-function switchView(name, el) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('view-' + name).classList.add('active');
-  if (el) el.classList.add('active');
-  else {
-    const items = document.querySelectorAll('.nav-item');
-    items.forEach(i => { if (i.getAttribute('onclick') && i.getAttribute('onclick').includes(name)) i.classList.add('active'); });
-  }
-  document.getElementById('topbar-title').textContent = VIEW_TITLES[name] || '';
-
-  if (name === 'history') renderHistory();
-  if (name === 'analytics') renderAnalytics();
-  if (name === 'locations') renderLocations();
+function navTo(name){
+  const item = document.querySelector(`.sb-item[data-view="${name}"]`);
+  switchView(name, item);
 }
 
-function switchOptTab(name, el) {
-  document.querySelectorAll('.opt-tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.opt-panel').forEach(p => p.classList.remove('active'));
+document.querySelectorAll('.sb-item').forEach(el=>{
+  el.addEventListener('click',()=>switchView(el.dataset.view, el));
+});
+
+function switchView(name, el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('view-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  const meta = VIEW_META[name]||[name,''];
+  document.getElementById('tb-title').textContent = meta[0];
+  document.getElementById('tb-sub').textContent = meta[1];
+  if(name==='history') renderHistory();
+  if(name==='analytics') renderAnalytics();
+  if(name==='realtime') renderRealtime();
+  if(name==='geo') renderGeo();
+}
+
+function optTab(name, el){
+  document.querySelectorAll('.opt-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.opt-panel').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
-  document.getElementById('opt-' + name).classList.add('active');
+  document.getElementById('op-'+name).classList.add('active');
 }
 
-/* ═══════════════════════════════
-   QR GENERATION
-═══════════════════════════════ */
-function getECL() {
-  const map = { L: QRCode.CorrectLevel.L, M: QRCode.CorrectLevel.M, Q: QRCode.CorrectLevel.Q, H: QRCode.CorrectLevel.H };
-  return map[document.getElementById('ecl').value];
-}
-
-function liveUpdate() {
-  clearTimeout(liveTimer);
-  liveTimer = setTimeout(() => {
-    const url = document.getElementById('url-inp').value.trim();
-    if (url) generateQR(true);
-  }, 180);
-}
-
-document.getElementById('url-inp').addEventListener('input', liveUpdate);
-document.getElementById('url-inp').addEventListener('keydown', e => { if (e.key === 'Enter') generateQR(false); });
-
-async function generateQR(isLive = false) {
-  let url = document.getElementById('url-inp').value.trim();
-  if (!url) { if (!isLive) toast('Введіть URL', 'error'); return; }
-  if (!url.match(/^https?:\/\//)) url = 'https://' + url;
-
-  const size = parseInt(document.getElementById('qr-size').value);
-  const fg = document.getElementById('fg-color').value;
-  const bg = document.getElementById('bg-color').value;
-  const style = document.getElementById('mod-style').value;
-  const pad = parseInt(document.getElementById('qr-pad').value);
-
-  const finalCanvas = document.getElementById('qr-final');
-  const emptyEl = document.getElementById('qr-empty');
-  const outputEl = document.getElementById('qr-output');
-
-  outputEl.style.display = 'none';
-
-  const tmpDiv = document.createElement('div');
-  tmpDiv.style.cssText = 'position:absolute;left:-9999px;top:-9999px;';
-  document.body.appendChild(tmpDiv);
-
-  try {
-    await new Promise((resolve, reject) => {
-      tmpDiv.innerHTML = '';
-      const qr = new QRCode(tmpDiv, {
-        text: url,
-        width: size,
-        height: size,
-        colorDark: fg,
-        colorLight: bg,
-        correctLevel: getECL(),
-      });
-      setTimeout(() => {
-        const src = tmpDiv.querySelector('canvas');
-        if (!src) { reject(); return; }
-        const ctx = finalCanvas.getContext('2d');
-        finalCanvas.width = size;
-        finalCanvas.height = size;
-        ctx.fillStyle = bg;
-        ctx.fillRect(0, 0, size, size);
-        ctx.drawImage(src, 0, 0);
-
-        if (style !== 'square') applyModuleStyle(ctx, size, fg, bg, style, pad);
-        if (logoDataURL) overlayLogo(ctx, size);
-
-        emptyEl.style.display = 'none';
-        finalCanvas.style.display = 'block';
-        finalCanvas.style.width = '100%';
-        finalCanvas.style.maxWidth = '280px';
-        finalCanvas.style.height = 'auto';
-        resolve();
-      }, 100);
-    });
-  } catch(e) {
-    toast('Помилка генерації', 'error');
-  } finally {
-    tmpDiv.remove();
-  }
-
-  let domain;
-  try { domain = new URL(url).hostname.replace(/^www\./, ''); } catch { domain = url.slice(0, 40); }
-  document.getElementById('qr-chip').textContent = domain;
-  document.getElementById('preview-actions').style.display = 'flex';
-
-  if (!isLive) {
-    const existing = DB.items.find(i => i.url === url);
-    if (existing) {
-      currentId = existing.id;
-    } else {
-      const item = { id: uid(), url, domain, fg, bg, size, style, pad, scans: 0, scanLog: [], geoLog: [], createdAt: Date.now() };
-      DB.items.unshift(item);
-      save();
-      currentId = item.id;
-    }
-    updateBadge();
-    updateSidebar();
-    showScanBox();
-    toast('QR-код створено! ✓', 'success');
-  } else {
-    const item = DB.items.find(i => i.id === currentId);
-    if (item) { item.fg = fg; item.bg = bg; item.size = size; item.style = style; item.pad = pad; save(); }
-  }
-}
-
-function applyModuleStyle(ctx, size, fg, bg, style, pad) {
-  const data = ctx.getImageData(0, 0, size, size);
-  const pix = data.data;
-  ctx.clearRect(0, 0, size, size);
-  ctx.fillStyle = bg;
-  ctx.fillRect(0, 0, size, size);
-
-  const modules = 33;
-  const ms = size / modules;
-  for (let r = 0; r < modules; r++) {
-    for (let c = 0; c < modules; c++) {
-      const px = Math.floor((c + 0.5) * ms);
-      const py = Math.floor((r + 0.5) * ms);
-      const idx = (py * size + px) * 4;
-      if (pix[idx] < 128) {
-        ctx.fillStyle = fg;
-        const x = c * ms + 0.5;
-        const y = r * ms + 0.5;
-        const s = ms - 1;
-        if (style === 'round') {
-          ctx.beginPath();
-          ctx.roundRect(x, y, s, s, s * 0.3);
-          ctx.fill();
-        } else {
-          ctx.beginPath();
-          ctx.arc(x + s/2, y + s/2, s * 0.42, 0, Math.PI*2);
-          ctx.fill();
-        }
-      }
-    }
-  }
-}
-
-function overlayLogo(ctx, size) {
-  const logoSize = parseInt(document.getElementById('logo-size').value) / 100;
-  const lw = size * logoSize;
-  const lh = lw;
-  const lx = (size - lw) / 2;
-  const ly = (size - lh) / 2;
-
-  ctx.fillStyle = '#fff';
-  const pad = lw * 0.12;
-  ctx.beginPath();
-  ctx.roundRect(lx - pad, ly - pad, lw + pad*2, lh + pad*2, 8);
-  ctx.fill();
-
-  const img = new Image();
-  img.src = logoDataURL;
-  ctx.drawImage(img, lx, ly, lw, lh);
-}
-
-/* ═══════════════════════════════
-   LOGO
-═══════════════════════════════ */
-function handleLogoUpload(input) {
-  const file = input.files[0];
-  if (!file) return;
-  if (file.size > 2 * 1024 * 1024) { toast('Файл завеликий (макс. 2 МБ)', 'error'); return; }
-  const reader = new FileReader();
-  reader.onload = e => {
-    logoDataURL = e.target.result;
-    document.getElementById('logo-preview-img').src = logoDataURL;
-    document.getElementById('logo-preview-name').textContent = file.name;
-    document.getElementById('logo-upload-area-wrap').style.display = 'none';
-    document.getElementById('logo-preview-wrap').style.display = 'block';
-    liveUpdate();
-    toast('Логотип додано');
-  };
-  reader.readAsDataURL(file);
-}
-
-function removeLogo() {
-  logoDataURL = null;
-  document.getElementById('logo-file').value = '';
-  document.getElementById('logo-upload-area-wrap').style.display = 'block';
-  document.getElementById('logo-preview-wrap').style.display = 'none';
+/* ═══════════ COLOR SYNC ═══════════ */
+function syncColor(which){
+  const inp = document.getElementById(which+'-color');
+  const v = inp.value;
+  document.getElementById(which+'-preview').style.background = v;
+  document.getElementById(which+'-hex').textContent = v;
   liveUpdate();
 }
 
-/* ═══════════════════════════════
-   SCAN TRACKING
-═══════════════════════════════ */
-function showScanBox() {
-  const item = DB.items.find(i => i.id === currentId);
-  if (!item) return;
-  document.getElementById('scan-box').style.display = 'block';
-  document.getElementById('scan-n').textContent = item.scans;
-  drawSparkline(item.scanLog);
+/* ═══════════ QR GENERATION ═══════════ */
+function getECL(){
+  const m={L:QRCode.CorrectLevel.L,M:QRCode.CorrectLevel.M,Q:QRCode.CorrectLevel.Q,H:QRCode.CorrectLevel.H};
+  return m[document.getElementById('ecl').value];
 }
 
-function addScan() {
-  const item = DB.items.find(i => i.id === currentId);
-  if (!item) { toast('Спочатку згенеруйте QR-код', 'error'); return; }
-  item.scans++;
+function liveUpdate(){
+  clearTimeout(liveT);
+  liveT = setTimeout(()=>{
+    const url = document.getElementById('url-inp').value.trim();
+    if(url) renderQR(url, true);
+  }, 200);
+}
 
-  const geos = LOCATIONS;
-  const weights = [35, 15, 12, 10, 8, 8, 7, 5];
-  const roll = Math.random() * 100;
-  let acc = 0;
-  let chosen = geos[0];
-  for (let i = 0; i < geos.length; i++) {
-    acc += weights[i];
-    if (roll < acc) { chosen = geos[i]; break; }
+document.getElementById('url-inp').addEventListener('input', liveUpdate);
+document.getElementById('url-inp').addEventListener('keydown', e=>{ if(e.key==='Enter') generateQR(false); });
+
+async function renderQR(url, isLive){
+  if(!url.match(/^https?:\/\//)) url = 'https://'+url;
+  const size = parseInt(document.getElementById('qr-sz').value);
+  const fg = document.getElementById('fg-color').value;
+  const bg = document.getElementById('bg-color').value;
+  const mod = document.getElementById('mod').value;
+
+  const fc = document.getElementById('qr-canvas-final');
+  const rawDiv = document.getElementById('qr-raw-div');
+  rawDiv.innerHTML='';
+
+  return new Promise(resolve=>{
+    const qr = new QRCode(rawDiv,{
+      text:url, width:size, height:size,
+      colorDark:fg, colorLight:bg, correctLevel:getECL()
+    });
+    setTimeout(()=>{
+      const src = rawDiv.querySelector('canvas');
+      if(!src){resolve(false);return;}
+      const ctx = fc.getContext('2d');
+      fc.width=size; fc.height=size;
+      ctx.fillStyle=bg; ctx.fillRect(0,0,size,size);
+      if(mod==='sq'){
+        ctx.drawImage(src,0,0);
+      } else {
+        ctx.drawImage(src,0,0);
+        applyMod(ctx,size,fg,bg,mod);
+      }
+      if(logoURL) drawLogo(ctx,size);
+      document.getElementById('qr-empty').style.display='none';
+      fc.style.display='block';
+      resolve(true);
+    },120);
+  });
+}
+
+async function generateQR(isLive){
+  let url = document.getElementById('url-inp').value.trim();
+  if(!url){toast('Введіть URL','err');return;}
+  if(!url.match(/^https?:\/\//)) url='https://'+url;
+
+  const ok = await renderQR(url, isLive);
+  if(!ok){toast('Помилка генерації','err');return;}
+
+  let domain;
+  try{domain=new URL(url).hostname.replace(/^www\./,'');}catch{domain=url.slice(0,40);}
+  document.getElementById('qr-url-label').textContent=domain;
+  document.getElementById('preview-btns').style.display='grid';
+
+  // Check duplicate
+  const dup = DB.items.find(i=>i.url===url);
+  if(dup){
+    currentId = dup.id;
+  } else {
+    const item={
+      id:uid(), url, domain,
+      fg:document.getElementById('fg-color').value,
+      bg:document.getElementById('bg-color').value,
+      mod:document.getElementById('mod').value,
+      size:parseInt(document.getElementById('qr-sz').value),
+      scans:0, scanLog:[], geoLog:[],
+      createdAt:Date.now()
+    };
+    DB.items.unshift(item);
+    save();
+    currentId = item.id;
   }
 
-  item.scanLog.push(Date.now());
-  item.geoLog = item.geoLog || [];
-  item.geoLog.push({ ...chosen, ts: Date.now() });
-  save();
-  document.getElementById('scan-n').textContent = item.scans;
-  drawSparkline(item.scanLog);
-  updateSidebar();
-  updateBadge();
-
-  const btn = document.querySelector('.scan-btn');
-  btn.style.transform = 'scale(0.92)';
-  setTimeout(() => { btn.style.transform = ''; }, 120);
-  toast(`+1 скан · ${chosen.flag} ${chosen.name}`);
+  refreshScanBox();
+  updateGlobalStats();
+  toast('QR-код створено ✓','ok');
 }
 
-function drawSparkline(log) {
-  const c = document.getElementById('sparkline');
-  const ctx = c.getContext('2d');
-  const w = c.offsetWidth || 280;
-  const h = 40;
-  c.width = w; c.height = h;
-  ctx.clearRect(0, 0, w, h);
-  if (!log || log.length < 2) return;
+function applyMod(ctx,size,fg,bg,mod){
+  const data=ctx.getImageData(0,0,size,size);
+  const pix=data.data;
+  ctx.clearRect(0,0,size,size);
+  ctx.fillStyle=bg; ctx.fillRect(0,0,size,size);
+  const N=33, ms=size/N;
+  for(let r=0;r<N;r++) for(let c=0;c<N;c++){
+    const px=Math.floor((c+.5)*ms), py=Math.floor((r+.5)*ms);
+    const idx=(py*size+px)*4;
+    if(pix[idx]<128){
+      ctx.fillStyle=fg;
+      const x=c*ms+.5, y=r*ms+.5, s=ms-1;
+      ctx.beginPath();
+      if(mod==='rd') ctx.roundRect(x,y,s,s,s*.3);
+      else{ctx.arc(x+s/2,y+s/2,s*.42,0,Math.PI*2);}
+      ctx.fill();
+    }
+  }
+}
 
-  const now = Date.now();
-  const buckets = Array(14).fill(0);
-  log.forEach(ts => {
-    const hoursAgo = Math.floor((now - ts) / 3600000);
-    if (hoursAgo < 14) buckets[13 - hoursAgo]++;
+function drawLogo(ctx,size){
+  const pct=parseInt(document.getElementById('logo-sz').value)/100;
+  const lw=size*pct, lh=lw;
+  const lx=(size-lw)/2, ly=(size-lh)/2;
+  const pad=lw*.12;
+  ctx.fillStyle='#fff';
+  ctx.beginPath();
+  ctx.roundRect(lx-pad,ly-pad,lw+pad*2,lh+pad*2,6);
+  ctx.fill();
+  const img=new Image(); img.src=logoURL;
+  ctx.drawImage(img,lx,ly,lw,lh);
+}
+
+/* ═══════════ SCAN TRACKING ═══════════ */
+function refreshScanBox(){
+  const item=DB.items.find(i=>i.id===currentId);
+  if(!item){document.getElementById('scan-box').style.display='none';return;}
+  document.getElementById('scan-box').style.display='block';
+  animateCount('scan-big', item.scans);
+  renderScanLog(item);
+  drawSparkline(item.scanLog);
+}
+
+function animateCount(elId, target){
+  const el=document.getElementById(elId);
+  const from=parseInt(el.textContent)||0;
+  const diff=target-from;
+  if(diff===0){el.textContent=target;return;}
+  const steps=Math.min(20,Math.abs(diff));
+  let step=0;
+  const interval=setInterval(()=>{
+    step++;
+    el.textContent=Math.round(from+(diff/steps)*step);
+    if(step>=steps){el.textContent=target;clearInterval(interval);}
+  },20);
+}
+
+function addScan(){
+  const item=DB.items.find(i=>i.id===currentId);
+  if(!item){toast('Спочатку згенеруйте QR','err');return;}
+
+  // pick geo by weight
+  let roll=Math.random()*100, acc=0, geo=GEOS[0];
+  for(const g of GEOS){acc+=g.w;if(roll<acc){geo=g;break;}}
+
+  const now=Date.now();
+  item.scans++;
+  item.scanLog.push(now);
+  item.geoLog=item.geoLog||[];
+  item.geoLog.push({...geo,ts:now});
+  save();
+
+  // ANIMATE button
+  const btn=document.getElementById('scan-add-btn');
+  btn.style.transform='scale(.92)';
+  setTimeout(()=>btn.style.transform='',130);
+
+  animateCount('scan-big', item.scans);
+  renderScanLog(item);
+  drawSparkline(item.scanLog);
+  updateGlobalStats();
+  addRTFeedEntry(item, geo);
+  toast(`+1 скан · ${geo.flag} ${geo.name}`,'info');
+}
+
+function resetScans(){
+  const item=DB.items.find(i=>i.id===currentId);
+  if(!item)return;
+  if(!confirm('Скинути всі сканування для цього QR?'))return;
+  item.scans=0; item.scanLog=[]; item.geoLog=[];
+  save();
+  refreshScanBox();
+  updateGlobalStats();
+  toast('Лічильник скинуто');
+}
+
+function renderScanLog(item){
+  const el=document.getElementById('scan-log');
+  const recent=(item.scanLog||[]).slice(-8).reverse();
+  const geo=(item.geoLog||[]).slice(-8).reverse();
+  if(!recent.length){el.innerHTML='<div style="color:var(--text4);font-size:12px;padding:4px 0">Немає сканувань</div>';return;}
+  el.innerHTML=recent.map((ts,i)=>{
+    const g=geo[i]||{};
+    return `<div class="scan-log-entry">
+      <span class="scan-log-time">${fmtTime(ts)}</span>
+      <span class="scan-log-flag">${g.flag||'🌐'}</span>
+      <span style="color:var(--text2);font-size:11.5px">${g.name||'Невідомо'}</span>
+    </div>`;
+  }).join('');
+}
+
+function drawSparkline(log){
+  const c=document.getElementById('sparkline');
+  const ctx=c.getContext('2d');
+  const w=c.offsetWidth||260, h=44;
+  c.width=w; c.height=h;
+  ctx.clearRect(0,0,w,h);
+  const now=Date.now();
+  const buckets=Array(14).fill(0);
+  (log||[]).forEach(ts=>{
+    const ha=Math.floor((now-ts)/3600000);
+    if(ha<14) buckets[13-ha]++;
   });
-
-  const max = Math.max(...buckets, 1);
-  const bw = Math.floor((w - 13) / 14);
-
-  buckets.forEach((v, i) => {
-    const bh = Math.max(2, (v / max) * (h - 6));
-    const x = i * (bw + 1);
-    const y = h - bh - 2;
-    ctx.fillStyle = v > 0 ? '#4f46e5' : '#e4e3de';
+  const max=Math.max(...buckets,1);
+  const bw=Math.floor((w-13)/14);
+  buckets.forEach((v,i)=>{
+    const bh=Math.max(3,(v/max)*(h-6));
+    const x=i*(bw+1), y=h-bh-2;
+    ctx.fillStyle=v>0?'rgba(139,92,246,.85)':'rgba(124,58,237,.12)';
     ctx.beginPath();
-    ctx.roundRect(x, y, bw, bh, 2);
+    if(ctx.roundRect) ctx.roundRect(x,y,bw,bh,2);
+    else ctx.rect(x,y,bw,bh);
     ctx.fill();
   });
 }
 
-/* ═══════════════════════════════
-   HISTORY
-═══════════════════════════════ */
-function renderHistory() {
-  const grid = document.getElementById('history-grid');
-  if (!DB.items.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg><h3>Порожня історія</h3><p>Згенеруйте QR-код, щоб він тут з'явився</p></div>`;
+/* ═══════════ LOGO ═══════════ */
+function onLogoFile(inp){
+  const f=inp.files[0]; if(!f)return;
+  if(f.size>2*1024*1024){toast('Файл >2 МБ','err');return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    logoURL=e.target.result;
+    document.getElementById('logo-thumb').src=logoURL;
+    document.getElementById('logo-name').textContent=f.name;
+    document.getElementById('logo-drop-area').style.display='none';
+    document.getElementById('logo-info-area').style.display='block';
+    liveUpdate(); toast('Логотип додано');
+  };
+  r.readAsDataURL(f);
+}
+function clearLogo(){
+  logoURL=null;
+  document.getElementById('logo-file').value='';
+  document.getElementById('logo-drop-area').style.display='block';
+  document.getElementById('logo-info-area').style.display='none';
+  liveUpdate();
+}
+
+/* ═══════════ HISTORY ═══════════ */
+function renderHistory(){
+  const q=(document.getElementById('hist-search').value||'').toLowerCase();
+  const items=DB.items.filter(i=>!q||i.url.toLowerCase().includes(q)||i.domain.toLowerCase().includes(q));
+  const grid=document.getElementById('hist-grid');
+  if(!items.length){
+    grid.innerHTML=`<div class="empty" style="grid-column:1/-1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+      <h3>${q?'Нічого не знайдено':'Порожня історія'}</h3>
+      <p>${q?'Спробуйте інший запит':'Згенеруйте QR-код і він з'явиться тут'}</p>
+    </div>`;
     return;
   }
-  grid.innerHTML = '';
-  DB.items.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'hist-card' + (item.id === currentId ? ' selected' : '');
-    card.dataset.id = item.id;
-    const ago = formatAgo(item.createdAt);
-    card.innerHTML = `
-      <div class="hist-card-top">
-        <div class="hist-thumb"><canvas id="ht-${item.id}" width="56" height="56"></canvas></div>
-        <div class="hist-info">
-          <div class="hist-domain">${item.domain}</div>
-          <div class="hist-url">${item.url}</div>
-          <div class="hist-time">${ago}</div>
+  grid.innerHTML='';
+  items.forEach(item=>{
+    const card=document.createElement('div');
+    card.className='hcard'+(item.id===currentId?' active':'');
+    card.innerHTML=`
+      <div class="hcard-top">
+        <div class="hcard-thumb"><canvas id="ht-${item.id}" width="52" height="52"></canvas></div>
+        <div class="hcard-info">
+          <div class="hcard-domain">${item.domain}</div>
+          <div class="hcard-url">${item.url}</div>
+          <div class="hcard-time">${fmtAgo(item.createdAt)}</div>
         </div>
       </div>
-      <div class="hist-card-bottom">
+      <div class="hcard-bottom">
         <span class="scan-pill">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
           ${item.scans} скан.
         </span>
-        <div class="hist-actions">
-          <button class="icon-btn" onclick="event.stopPropagation(); openModal('${item.id}')" title="Переглянути">
+        <div class="hcard-actions">
+          <button class="btn btn-icon btn-sm" onclick="event.stopPropagation();openModal('${item.id}')" title="Переглянути">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
-          <button class="icon-btn" onclick="event.stopPropagation(); deleteItem('${item.id}')" title="Видалити">
+          <button class="btn btn-icon btn-sm" onclick="event.stopPropagation();deleteItem('${item.id}')" title="Видалити">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
           </button>
         </div>
       </div>`;
-    card.onclick = () => loadFromHistory(item.id);
+    card.onclick=()=>loadItem(item.id);
     grid.appendChild(card);
-    setTimeout(() => renderThumb(item, 'ht-' + item.id, 56), 60);
+    setTimeout(()=>thumbDraw(item,`ht-${item.id}`,52),50);
   });
 }
 
-function renderThumb(item, canvasId, size) {
-  const c = document.getElementById(canvasId);
-  if (!c) return;
-  const tmpDiv = document.createElement('div');
-  tmpDiv.style.cssText = 'position:absolute;left:-9999px;';
-  document.body.appendChild(tmpDiv);
-  const qr = new QRCode(tmpDiv, { text: item.url, width: size, height: size, colorDark: item.fg || '#0d0d0d', colorLight: item.bg || '#ffffff', correctLevel: QRCode.CorrectLevel.M });
-  setTimeout(() => {
-    const src = tmpDiv.querySelector('canvas');
-    if (src) { const ctx = c.getContext('2d'); ctx.drawImage(src, 0, 0, size, size); }
-    tmpDiv.remove();
-  }, 80);
+function thumbDraw(item,cid,size){
+  const c=document.getElementById(cid);if(!c)return;
+  const raw=document.getElementById('qr-raw-div');raw.innerHTML='';
+  new QRCode(raw,{text:item.url,width:size,height:size,colorDark:item.fg||'#0d0d0d',colorLight:item.bg||'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  setTimeout(()=>{const s=raw.querySelector('canvas');if(s){const ctx=c.getContext('2d');ctx.drawImage(s,0,0,size,size);}},80);
 }
 
-function loadFromHistory(id) {
-  const item = DB.items.find(i => i.id === id);
-  if (!item) return;
-  currentId = id;
-  document.getElementById('url-inp').value = item.url;
-  document.getElementById('fg-color').value = item.fg;
-  document.getElementById('bg-color').value = item.bg;
-  document.getElementById('fg-hex').textContent = item.fg;
-  document.getElementById('bg-hex').textContent = item.bg;
-  document.getElementById('qr-size').value = item.size;
-  document.getElementById('sz-label').textContent = item.size + 'px';
-  document.getElementById('mod-style').value = item.style || 'square';
-  switchView('generator', document.querySelector('.nav-item'));
-  setTimeout(() => generateQR(true), 50);
-  showScanBox();
+async function loadItem(id){
+  const item=DB.items.find(i=>i.id===id);if(!item)return;
+  currentId=id;
+  document.getElementById('url-inp').value=item.url;
+  document.getElementById('fg-color').value=item.fg||'#0d0d0d';
+  document.getElementById('bg-color').value=item.bg||'#ffffff';
+  document.getElementById('fg-preview').style.background=item.fg||'#0d0d0d';
+  document.getElementById('bg-preview').style.background=item.bg||'#ffffff';
+  document.getElementById('fg-hex').textContent=item.fg||'#0d0d0d';
+  document.getElementById('bg-hex').textContent=item.bg||'#ffffff';
+  document.getElementById('mod').value=item.mod||'sq';
+  document.getElementById('qr-sz').value=item.size||256;
+  document.getElementById('sz-lbl').textContent=(item.size||256)+'px';
+  navTo('generator');
+  await renderQR(item.url, true);
+  let domain;try{domain=new URL(item.url).hostname.replace(/^www\./,'');}catch{domain=item.url.slice(0,40);}
+  document.getElementById('qr-url-label').textContent=domain;
+  document.getElementById('preview-btns').style.display='grid';
+  refreshScanBox();
 }
 
-function deleteItem(id) {
-  if (!confirm('Видалити цей QR-код?')) return;
-  DB.items = DB.items.filter(i => i.id !== id);
-  save();
-  if (currentId === id) currentId = null;
-  updateBadge();
-  updateSidebar();
-  renderHistory();
-  toast('Видалено');
+function deleteItem(id){
+  if(!confirm('Видалити цей QR-код і всі дані сканувань?'))return;
+  DB.items=DB.items.filter(i=>i.id!==id);
+  save(); if(currentId===id)currentId=null;
+  updateGlobalStats(); renderHistory(); toast('Видалено');
 }
 
-/* ═══════════════════════════════
-   ANALYTICS
-═══════════════════════════════ */
-function renderAnalytics() {
-  const total = DB.items.reduce((a, b) => a + b.scans, 0);
-  const avg = DB.items.length ? (total / DB.items.length).toFixed(1) : '—';
-  const top = DB.items.length ? DB.items.reduce((a, b) => b.scans > a.scans ? b : a) : null;
+function clearAll(){
+  if(!DB.items.length)return;
+  if(!confirm('Видалити ВСІ QR-коди?'))return;
+  DB.items=[]; save(); currentId=null;
+  updateGlobalStats(); renderHistory(); toast('Очищено');
+}
 
-  document.getElementById('m-codes').textContent = DB.items.length;
-  document.getElementById('m-scans').textContent = total;
-  document.getElementById('m-avg').textContent = avg;
-  document.getElementById('m-top').textContent = top ? top.domain : '—';
-  document.getElementById('m-top-n').textContent = top ? top.scans + ' сканувань' : '—';
+/* ═══════════ ANALYTICS ═══════════ */
+function renderAnalytics(){
+  const total=DB.items.reduce((a,b)=>a+b.scans,0);
+  const count=DB.items.length;
+  const avg=count?+(total/count).toFixed(1):0;
+  const active=DB.items.filter(i=>i.scans>0).length;
+  const rate=count?Math.round(active/count*100):0;
 
-  const sorted = [...DB.items].sort((a, b) => b.scans - a.scans).slice(0, 8);
-  const labels = sorted.map(i => i.domain);
-  const data = sorted.map(i => i.scans);
+  document.getElementById('kpi-codes').textContent=count;
+  document.getElementById('kpi-scans').textContent=total;
+  document.getElementById('kpi-avg').textContent=avg||'—';
+  document.getElementById('kpi-rate').textContent=rate+'%';
+  document.getElementById('kpi-codes-d').textContent=count+' усього';
+  document.getElementById('kpi-scans-d').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg> всього подій`;
+  document.getElementById('kpi-avg-d').textContent='сер. на код';
+  document.getElementById('kpi-rate-d').textContent='мають скани';
 
-  if (barChartInst) barChartInst.destroy();
-  const bc = document.getElementById('bar-chart');
-  barChartInst = new Chart(bc, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{ data, backgroundColor: '#4f46e5', borderRadius: 5, borderSkipped: false }],
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false }, ticks: { font: { size: 11 }, color: '#9a9a9a', maxRotation: 25 } },
-        y: { grid: { color: '#e4e3de' }, ticks: { font: { size: 11 }, color: '#9a9a9a' }, beginAtZero: true },
-      },
-    },
+  document.getElementById('kpi-codes-bar').style.width=Math.min(count*10,100)+'%';
+  document.getElementById('kpi-scans-bar').style.width=Math.min(total*2,100)+'%';
+  document.getElementById('kpi-avg-bar').style.width=Math.min(avg*10,100)+'%';
+  document.getElementById('kpi-rate-bar').style.width=rate+'%';
+
+  renderTimeline();
+  renderLeaderboard();
+  renderDonut();
+  renderHeatmap();
+}
+
+function setTimeRange(days,el){
+  timeRange=days;
+  document.querySelectorAll('.tl-filter').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  renderTimeline();
+}
+
+function renderTimeline(){
+  const now=Date.now();
+  const days=Array.from({length:timeRange},(_,i)=>{
+    const d=new Date(now-(timeRange-1-i)*86400000);
+    return {label:d.toLocaleDateString('uk-UA',{month:'short',day:'numeric'}),ts:d};
   });
-
-  if (pieChartInst) pieChartInst.destroy();
-  const top5 = [...DB.items].sort((a, b) => b.scans - a.scans).slice(0, 5);
-  const pc = document.getElementById('pie-chart');
-  pieChartInst = new Chart(pc, {
-    type: 'doughnut',
-    data: {
-      labels: top5.map(i => i.domain),
-      datasets: [{ data: top5.map(i => i.scans || 0), backgroundColor: ['#4f46e5','#818cf8','#a5b4fc','#c7d2fe','#e0e7ff'], borderWidth: 0 }],
+  const counts=days.map(day=>{
+    const start=new Date(day.ts); start.setHours(0,0,0,0);
+    const end=new Date(start); end.setDate(end.getDate()+1);
+    return DB.items.reduce((sum,item)=>sum+(item.scanLog||[]).filter(t=>t>=start&&t<end).length,0);
+  });
+  if(tlChart) tlChart.destroy();
+  const c=document.getElementById('timeline-chart');
+  tlChart=new Chart(c,{
+    type:'line',
+    data:{
+      labels:days.map(d=>d.label),
+      datasets:[{
+        data:counts,
+        borderColor:'#8b5cf6',
+        backgroundColor:'rgba(139,92,246,.12)',
+        tension:.4,fill:true,pointRadius:3,
+        pointBackgroundColor:'#8b5cf6',pointBorderColor:'#18181b',pointBorderWidth:2
+      }]
     },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, boxWidth: 10, padding: 10 } } },
-      cutout: '65%',
-    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{
+        backgroundColor:'#18181b',borderColor:'#3a3a3e',borderWidth:1,
+        titleColor:'#fafafa',bodyColor:'#a1a1aa',padding:10,
+        callbacks:{label:c=>`${c.parsed.y} скан.`}
+      }},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#71717a',font:{size:10},maxRotation:0}},
+        y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#71717a',font:{size:11}},beginAtZero:true}
+      }
+    }
   });
 }
 
-/* ═══════════════════════════════
-   LOCATIONS
-═══════════════════════════════ */
-function renderLocations() {
-  const allGeo = DB.items.flatMap(i => i.geoLog || []);
-  const total = allGeo.length;
+function renderLeaderboard(){
+  const sorted=[...DB.items].sort((a,b)=>b.scans-a.scans).slice(0,5);
+  const max=sorted[0]?.scans||1;
+  const ranks=['gold','silver','bronze','other','other'];
+  const el=document.getElementById('leaderboard');
+  if(!sorted.length){el.innerHTML='<div class="empty" style="padding:32px"><p>Ще немає даних</p></div>';return;}
+  el.innerHTML=sorted.map((item,i)=>`
+    <div class="lb-row">
+      <span class="lb-rank ${ranks[i]}">${i+1}</span>
+      <div class="lb-thumb"><canvas id="lb-${item.id}" width="30" height="30"></canvas></div>
+      <div class="lb-info">
+        <div class="lb-domain">${item.domain}</div>
+        <div class="lb-url">${item.url.slice(0,40)}</div>
+      </div>
+      <div class="lb-meta">
+        <div class="lb-bar-wrap"><div class="lb-bar" style="width:${Math.round(item.scans/max*100)}%"></div></div>
+        <span class="lb-scans">${item.scans}</span>
+      </div>
+    </div>`).join('');
+  sorted.forEach(item=>setTimeout(()=>thumbDraw(item,`lb-${item.id}`,30),60));
+}
 
-  const counts = {};
-  allGeo.forEach(g => {
-    const key = g.name;
-    counts[key] = (counts[key] || { ...g, count: 0 });
-    counts[key].count++;
-  });
-
-  const sorted = Object.values(counts).sort((a, b) => b.count - a.count);
-  const top = sorted[0];
-
-  document.getElementById('loc-countries').textContent = sorted.length || 0;
-  document.getElementById('loc-top').textContent = top ? top.flag + ' ' + top.name : '—';
-  document.getElementById('loc-total').textContent = total;
-
-  const tbody = document.getElementById('loc-table-body');
-  if (!sorted.length) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--ink4);padding:24px 0;">Немає даних — зареєструйте сканування</td></tr>';
+function renderDonut(){
+  const top5=[...DB.items].sort((a,b)=>b.scans-a.scans).slice(0,5);
+  if(donutChart) donutChart.destroy();
+  const c=document.getElementById('donut-chart');
+  if(!top5.length||!top5.some(i=>i.scans>0)){
+    const ctx=c.getContext('2d');ctx.clearRect(0,0,c.width,c.height);
     return;
   }
-
-  tbody.innerHTML = sorted.map(g => {
-    const pct = total ? Math.round(g.count / total * 100) : 0;
-    return `
-      <tr>
-        <td><span class="loc-flag">${g.flag}</span>${g.name}</td>
-        <td>${g.count}</td>
-        <td><div style="display:flex;align-items:center;gap:8px;"><div class="loc-bar-wrap"><div class="loc-bar" style="width:${pct}%;"></div></div></div></td>
-        <td class="loc-pct">${pct}%</td>
-      </tr>`;
-  }).join('');
-}
-
-/* ═══════════════════════════════
-   MODAL
-═══════════════════════════════ */
-let modalItemId = null;
-
-function openModal(id) {
-  const item = DB.items.find(i => i.id === id);
-  if (!item) return;
-  modalItemId = id;
-  document.getElementById('modal-title').textContent = item.domain;
-  document.getElementById('modal-url').textContent = item.url;
-  document.getElementById('modal-overlay').classList.add('open');
-
-  const mc = document.getElementById('modal-canvas');
-  const tmpDiv = document.createElement('div');
-  tmpDiv.style.cssText = 'position:absolute;left:-9999px;';
-  document.body.appendChild(tmpDiv);
-  new QRCode(tmpDiv, { text: item.url, width: 200, height: 200, colorDark: item.fg, colorLight: item.bg, correctLevel: QRCode.CorrectLevel.M });
-  setTimeout(() => {
-    const src = tmpDiv.querySelector('canvas');
-    if (src) { const ctx = mc.getContext('2d'); ctx.drawImage(src, 0, 0, 200, 200); }
-    tmpDiv.remove();
-  }, 80);
-}
-
-function closeModal(e) {
-  if (e && e.target !== document.getElementById('modal-overlay')) return;
-  document.getElementById('modal-overlay').classList.remove('open');
-}
-
-function modalDownload() {
-  const c = document.getElementById('modal-canvas');
-  const a = document.createElement('a');
-  const item = DB.items.find(i => i.id === modalItemId);
-  a.href = c.toDataURL('image/png');
-  a.download = (item ? item.domain : 'qr') + '.png';
-  a.click();
-  toast('Завантаження...');
-}
-
-/* ═══════════════════════════════
-   DOWNLOAD / SHARE / COPY
-═══════════════════════════════ */
-function downloadQR() {
-  const fc = document.getElementById('qr-final');
-  if (fc.style.display === 'none') { toast('Спочатку згенеруйте QR', 'error'); return; }
-  const fmt = document.getElementById('export-fmt').value;
-  const expSize = parseInt(document.getElementById('export-size').value);
-
-  if (fmt === 'svg') {
-    const dataUrl = fc.toDataURL('image/png');
-    const s = expSize;
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${s}" height="${s}"><image href="${dataUrl}" width="${s}" height="${s}"/></svg>`;
-    const blob = new Blob([svg], { type: 'image/svg+xml' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'qr-code.svg';
-    a.click();
-  } else {
-    const tmp = document.createElement('canvas');
-    tmp.width = expSize; tmp.height = expSize;
-    const ctx = tmp.getContext('2d');
-    ctx.drawImage(fc, 0, 0, expSize, expSize);
-    const a = document.createElement('a');
-    a.href = tmp.toDataURL(fmt === 'jpeg' ? 'image/jpeg' : 'image/png', 0.95);
-    a.download = 'qr-code.' + (fmt === 'jpeg' ? 'jpg' : fmt);
-    a.click();
-  }
-  toast('Файл завантажено ✓', 'success');
-}
-
-function copyURL() {
-  const url = document.getElementById('url-inp').value.trim();
-  if (!url) return;
-  navigator.clipboard.writeText(url).then(() => toast('URL скопійовано ✓', 'success'));
-}
-
-function shareQR() {
-  const fc = document.getElementById('qr-final');
-  if (!fc || fc.style.display === 'none') { toast('Спочатку згенеруйте QR', 'error'); return; }
-  fc.toBlob(blob => {
-    if (navigator.share) {
-      navigator.share({ files: [new File([blob], 'qr.png', { type: 'image/png' })], title: 'QR-код' })
-        .then(() => toast('Поділились ✓', 'success'))
-        .catch(() => {});
-    } else {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'qr-code.png'; a.click();
-      toast('Збережено як PNG ✓', 'success');
+  donutChart=new Chart(c,{
+    type:'doughnut',
+    data:{
+      labels:top5.map(i=>i.domain),
+      datasets:[{
+        data:top5.map(i=>i.scans||0),
+        backgroundColor:['#7c3aed','#8b5cf6','#a78bfa','#c4b5fd','#2e1065'],
+        borderColor:'#18181b',borderWidth:2
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:'68%',
+      plugins:{
+        legend:{position:'bottom',labels:{color:'#a1a1aa',font:{size:11},boxWidth:10,padding:10}},
+        tooltip:{backgroundColor:'#18181b',borderColor:'#3a3a3e',borderWidth:1,titleColor:'#fafafa',bodyColor:'#a1a1aa',padding:10}
+      }
     }
-  }, 'image/png');
+  });
 }
 
-function exportAll() {
-  if (!DB.items.length) { toast('Немає даних для експорту', 'error'); return; }
-  const rows = [['ID','URL','Domain','Сканувань','Дата']];
-  DB.items.forEach(i => rows.push([i.id, i.url, i.domain, i.scans, new Date(i.createdAt).toLocaleString('uk-UA')]));
-  const csv = rows.map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'qr-studio-export.csv';
-  a.click();
-  toast('CSV завантажено ✓', 'success');
+function renderHeatmap(){
+  const hm=document.getElementById('heatmap');
+  hm.innerHTML='';
+  const now=Date.now();
+  // 7 days × 24 hours = 168 cells, column=hour, row=day
+  const cells=[];
+  for(let d=6;d>=0;d--){
+    for(let h=0;h<24;h++){
+      const start=now-(d*86400000)-(h*3600000);
+      const end=start+3600000;
+      // wrong order fix: we want col=hour of day, row=day
+      const count=DB.items.reduce((s,item)=>{
+        return s+(item.scanLog||[]).filter(t=>t>=start&&t<end).length;
+      },0);
+      cells.push(count);
+    }
+  }
+  const maxC=Math.max(...cells,1);
+  const COLORS=['rgba(124,58,237,.06)','rgba(124,58,237,.2)','rgba(124,58,237,.4)','rgba(139,92,246,.65)','rgba(167,139,250,.9)'];
+  cells.forEach(v=>{
+    const div=document.createElement('div');
+    div.className='hm-cell';
+    const idx=v===0?0:Math.min(4,Math.ceil(v/maxC*4));
+    div.style.background=COLORS[idx];
+    div.title=`${v} скан.`;
+    hm.appendChild(div);
+  });
+  const sw=document.getElementById('hm-swatches');
+  sw.innerHTML=COLORS.map(c=>`<div class="hm-leg-swatch" style="background:${c}"></div>`).join('');
 }
 
-/* ═══════════════════════════════
-   UI HELPERS
-═══════════════════════════════ */
-function updateBadge() {
-  document.getElementById('hist-badge').textContent = DB.items.length;
+/* ═══════════ REALTIME ═══════════ */
+let rtFeed = [];
+
+function addRTFeedEntry(item, geo){
+  rtFeed.unshift({domain:item.domain, geo, ts:Date.now()});
+  if(rtFeed.length>50) rtFeed=rtFeed.slice(0,50);
+  if(document.getElementById('view-realtime').classList.contains('active')) renderRealtime();
 }
 
-function updateSidebar() {
-  document.getElementById('sb-codes').textContent = DB.items.length;
-  document.getElementById('sb-scans').textContent = DB.items.reduce((a, b) => a + b.scans, 0);
+function renderRealtime(){
+  const now=Date.now();
+  const feedEl=document.getElementById('rtfeed');
+  if(!rtFeed.length){
+    feedEl.innerHTML='<div style="text-align:center;padding:24px 0;color:var(--text4);font-size:13px">Натисніть «+Скануванн» в генераторі</div>';
+  } else {
+    feedEl.innerHTML=rtFeed.slice(0,20).map(e=>`
+      <div class="rtfeed-entry">
+        <div class="rtfeed-dot"></div>
+        <span class="rtfeed-flag">${e.geo?.flag||'🌐'}</span>
+        <div class="rtfeed-info">
+          <div class="rtfeed-domain">${e.domain}</div>
+          <div class="rtfeed-loc">${e.geo?.name||'Невідомо'}</div>
+        </div>
+        <span class="rtfeed-time">${fmtTime(e.ts)}</span>
+      </div>`).join('');
+  }
+  // hour / today
+  const hour=rtFeed.filter(e=>now-e.ts<3600000).length;
+  const today=rtFeed.filter(e=>{
+    const d=new Date(e.ts); const n=new Date(now);
+    return d.getDate()===n.getDate()&&d.getMonth()===n.getMonth();
+  }).length;
+  document.getElementById('rt-hour').textContent=hour;
+  document.getElementById('rt-today').textContent=today;
+
+  // top by domain today
+  const byDomain={};
+  rtFeed.forEach(e=>{
+    const d=new Date(e.ts),n=new Date(now);
+    if(d.getDate()===n.getDate()&&d.getMonth()===n.getMonth()){
+      byDomain[e.domain]=(byDomain[e.domain]||0)+1;
+    }
+  });
+  const sorted=Object.entries(byDomain).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const tl=document.getElementById('rt-top-list');
+  if(!sorted.length){tl.innerHTML='<div style="color:var(--text4);font-size:12px">Немає даних</div>';return;}
+  const mx=sorted[0][1];
+  tl.innerHTML=sorted.map(([dom,n])=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <span style="font-size:13px;font-weight:500;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${dom}</span>
+      <div style="width:60px;height:4px;background:var(--bg5);border-radius:4px;flex-shrink:0">
+        <div style="height:100%;width:${Math.round(n/mx*100)}%;background:var(--accent2);border-radius:4px"></div>
+      </div>
+      <span style="font-size:12px;font-weight:600;color:var(--accent3);min-width:20px;text-align:right">${n}</span>
+    </div>`).join('');
 }
 
-function formatAgo(ts) {
-  const s = Math.floor((Date.now() - ts) / 1000);
-  if (s < 60) return 'щойно';
-  if (s < 3600) return Math.floor(s/60) + ' хв тому';
-  if (s < 86400) return Math.floor(s/3600) + ' год тому';
-  return Math.floor(s/86400) + ' дн тому';
+/* ═══════════ GEO ═══════════ */
+function renderGeo(){
+  const allGeo=DB.items.flatMap(i=>i.geoLog||[]);
+  const total=allGeo.length;
+  const counts={};
+  allGeo.forEach(g=>{
+    if(!counts[g.name]) counts[g.name]={...g,count:0};
+    counts[g.name].count++;
+  });
+  const sorted=Object.values(counts).sort((a,b)=>b.count-a.count);
+  const top=sorted[0];
+  document.getElementById('geo-countries').textContent=sorted.length;
+  document.getElementById('geo-top').textContent=top?`${top.flag} ${top.name}`:'—';
+  document.getElementById('geo-top-n').textContent=top?`${top.count} скан.`:'—';
+  document.getElementById('geo-total').textContent=total;
+
+  const tbody=document.getElementById('geo-tbody');
+  if(!sorted.length){
+    tbody.innerHTML='<tr><td colspan="4" style="text-align:center;color:var(--text4);padding:24px 0">Немає даних</td></tr>';
+  } else {
+    tbody.innerHTML=sorted.map(g=>{
+      const pct=total?Math.round(g.count/total*100):0;
+      return `<tr>
+        <td><span style="margin-right:6px">${g.flag}</span>${g.name}</td>
+        <td style="font-weight:600;color:var(--text)">${g.count}</td>
+        <td><div style="display:flex;align-items:center;gap:8px">
+          <div class="geo-bar-wrap"><div class="geo-bar" style="width:${pct}%"></div></div>
+        </div></td>
+        <td class="geo-pct">${pct}%</td>
+      </tr>`;
+    }).join('');
+  }
+
+  // geo bar chart
+  if(geoBarChart) geoBarChart.destroy();
+  const top5sorted=[...DB.items].sort((a,b)=>b.scans-a.scans).slice(0,6);
+  const gc=document.getElementById('geo-bar-chart');
+  geoBarChart=new Chart(gc,{
+    type:'bar',
+    data:{
+      labels:top5sorted.map(i=>i.domain),
+      datasets:[{data:top5sorted.map(i=>i.scans||0),backgroundColor:'rgba(139,92,246,.7)',borderRadius:5,borderSkipped:false}]
+    },
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#18181b',borderColor:'#3a3a3e',borderWidth:1,titleColor:'#fafafa',bodyColor:'#a1a1aa',padding:8}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#71717a',font:{size:10}},beginAtZero:true},
+        y:{grid:{display:false},ticks:{color:'#a1a1aa',font:{size:11}}}
+      }
+    }
+  });
 }
 
-function toast(msg, type = '') {
-  const el = document.createElement('div');
-  el.className = 'toast' + (type ? ' ' + type : '');
-  el.textContent = msg;
-  document.getElementById('toast-container').appendChild(el);
-  setTimeout(() => {
-    el.classList.add('out');
-    setTimeout(() => el.remove(), 200);
-  }, 2800);
+/* ═══════════ MODAL ═══════════ */
+function openModal(id){
+  const item=DB.items.find(i=>i.id===id);if(!item)return;
+  modalItemId=id;
+  document.getElementById('modal-ttl').textContent=item.domain;
+  document.getElementById('modal-url').textContent=item.url;
+  const mc=document.getElementById('modal-canvas');
+  const raw=document.getElementById('qr-raw-div');raw.innerHTML='';
+  new QRCode(raw,{text:item.url,width:200,height:200,colorDark:item.fg||'#0d0d0d',colorLight:item.bg||'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+  setTimeout(()=>{const s=raw.querySelector('canvas');if(s){const ctx=mc.getContext('2d');ctx.drawImage(s,0,0,200,200);}},80);
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function modalDL(){
+  const item=DB.items.find(i=>i.id===modalItemId);
+  const c=document.getElementById('modal-canvas');
+  const a=document.createElement('a');
+  a.href=c.toDataURL('image/png');
+  a.download=(item?item.domain:'qr')+'.png';
+  a.click(); toast('Завантаження…');
+}
+
+/* ═══════════ DOWNLOAD / SHARE / COPY ═══════════ */
+function downloadQR(){
+  const fc=document.getElementById('qr-canvas-final');
+  if(fc.style.display==='none'||!fc.width){toast('Згенеруйте QR','err');return;}
+  const fmt=document.getElementById('exp-fmt').value;
+  const sz=parseInt(document.getElementById('exp-sz').value);
+  if(fmt==='svg'){
+    const dataUrl=fc.toDataURL('image/png');
+    const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}"><image href="${dataUrl}" width="${sz}" height="${sz}"/></svg>`;
+    const blob=new Blob([svg],{type:'image/svg+xml'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='qr.svg';a.click();
+  } else {
+    const tmp=document.createElement('canvas');tmp.width=sz;tmp.height=sz;
+    tmp.getContext('2d').drawImage(fc,0,0,sz,sz);
+    const a=document.createElement('a');
+    a.href=tmp.toDataURL(fmt==='jpeg'?'image/jpeg':'image/png',.95);
+    a.download='qr.'+(fmt==='jpeg'?'jpg':fmt);a.click();
+  }
+  toast('Файл завантажено ✓','ok');
+}
+function copyURL(){
+  const url=document.getElementById('url-inp').value.trim();if(!url)return;
+  navigator.clipboard.writeText(url).then(()=>toast('URL скопійовано ✓','ok'));
+}
+function shareQR(){
+  const fc=document.getElementById('qr-canvas-final');
+  if(!fc.width){toast('Згенеруйте QR','err');return;}
+  fc.toBlob(blob=>{
+    if(navigator.share){
+      navigator.share({files:[new File([blob],'qr.png',{type:'image/png'})],title:'QR-код'})
+        .then(()=>toast('Поділились ✓','ok')).catch(()=>{});
+    } else {
+      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='qr.png';a.click();
+      toast('Збережено як PNG ✓','ok');
+    }
+  },'image/png');
+}
+function exportCSV(){
+  if(!DB.items.length){toast('Немає даних','err');return;}
+  const rows=[['ID','URL','Домен','Сканувань','Дата створення']];
+  DB.items.forEach(i=>rows.push([i.id,i.url,i.domain,i.scans,new Date(i.createdAt).toLocaleString('uk-UA')]));
+  const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='qr-studio.csv';a.click();
+  toast('CSV завантажено ✓','ok');
+}
+
+/* ═══════════ GLOBAL STATS ═══════════ */
+function updateGlobalStats(){
+  const n=DB.items.length;
+  const s=DB.items.reduce((a,b)=>a+b.scans,0);
+  document.getElementById('sb-codes').textContent=n;
+  document.getElementById('sb-scans').textContent=s;
+  document.getElementById('nav-badge').textContent=n;
+}
+
+/* ═══════════ TOAST ═══════════ */
+function toast(msg, type=''){
+  const el=document.createElement('div');
+  el.className='toast'+(type?' '+type:'');
+  el.textContent=msg;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),200);},2600);
+}
+
+/* ═══════════ UTILS ═══════════ */
+function fmtAgo(ts){
+  const s=Math.floor((Date.now()-ts)/1000);
+  if(s<60)return'щойно';
+  if(s<3600)return Math.floor(s/60)+' хв тому';
+  if(s<86400)return Math.floor(s/3600)+' год тому';
+  return Math.floor(s/86400)+' дн тому';
+}
+function fmtTime(ts){
+  const d=new Date(ts);
+  return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0');
 }
 
 /* INIT */
-updateBadge();
-updateSidebar();
+updateGlobalStats();
 </script>
 </body>
 </html>
