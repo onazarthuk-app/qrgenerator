@@ -6,7 +6,7 @@
 <title>QR Studio — Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@2.0.4/dist/qrcode.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -1073,7 +1073,7 @@ function drawModule(ctx,x,y,s,style){
 }
 
 /**
- * Draws a QR code onto a canvas. Returns {ok, size, moduleCount} or {ok:false}.
+ * Draws a QR code onto a canvas. Returns {ok, size, moduleCount} or {ok:false, error}.
  * opts: {fg, bg, fg2, gradient, mod, pad, ecl, size}
  */
 function drawQRToCanvas(canvas, content, opts){
@@ -1085,14 +1085,17 @@ function drawQRToCanvas(canvas, content, opts){
   const pad = opts.pad != null ? opts.pad : 2;
   const ecl = opts.ecl || 'M';
 
-  let qrData;
+  let qr;
   try{
-    qrData = QRCode.create(content, {errorCorrectionLevel: ecl});
+    // typeNumber 0 = auto-detect smallest version that fits the data
+    qr = qrcode(0, ecl);
+    qr.addData(content);
+    qr.make();
   }catch(e){
     return {ok:false, error:e};
   }
 
-  const n = qrData.modules.size;
+  const n = qr.getModuleCount();
   const total = n + pad*2;
   const cell = size/total;
 
@@ -1114,7 +1117,7 @@ function drawQRToCanvas(canvas, content, opts){
 
   for(let r=0;r<n;r++){
     for(let c=0;c<n;c++){
-      if(qrData.modules.get(r,c)){
+      if(qr.isDark(r,c)){
         drawModule(ctx, (c+pad)*cell, (r+pad)*cell, cell, mod);
       }
     }
@@ -1163,9 +1166,10 @@ function renderPreview(){
   if(!built){
     fc.style.display='none';
     emptyEl.style.display='flex';
+    emptyEl.querySelector('p').innerHTML = 'Заповніть форму<br>для генерації';
     labelEl.textContent='';
     btnsEl.style.display='none';
-    return null;
+    return {ok:false, reason:'empty'};
   }
 
   const opts = getStyleOpts();
@@ -1176,7 +1180,7 @@ function renderPreview(){
     emptyEl.querySelector('p').innerHTML = 'Не вдалося згенерувати<br>(текст занадто довгий)';
     labelEl.textContent='';
     btnsEl.style.display='none';
-    return null;
+    return {ok:false, reason:'render-error', error:res.error};
   }
   emptyEl.querySelector('p').innerHTML = 'Заповніть форму<br>для генерації';
   if(logoImg) drawLogoOnCanvas(res.ctx, res.size);
@@ -1185,7 +1189,7 @@ function renderPreview(){
   fc.style.display='block';
   labelEl.textContent = `${TYPE_ICONS[built.type]} ${built.label}`;
   btnsEl.style.display='grid';
-  return built;
+  return {ok:true, built};
 }
 
 /* Attach live-update listeners */
@@ -1195,8 +1199,13 @@ document.getElementById('url-inp').addEventListener('keydown', e=>{ if(e.key==='
 
 /* ═══════════ GENERATE (saves to history) ═══════════ */
 function generateQR(){
-  const built = renderPreview();
-  if(!built){ toast('Заповніть поле для генерації','err'); return; }
+  const result = renderPreview();
+  if(!result.ok){
+    if(result.reason==='empty') toast('Заповніть поле для генерації','err');
+    else toast('Помилка генерації: текст занадто довгий для обраного рівня корекції','err');
+    return;
+  }
+  const built = result.built;
 
   const opts = getStyleOpts();
 
