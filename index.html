@@ -6,136 +6,76 @@
 <title>QR Studio — Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;1,14..32,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#09090b;
-  --bg2:#111113;
-  --bg3:#18181b;
-  --bg4:#1f1f23;
-  --bg5:#27272a;
-  --border:#2a2a2e;
-  --border2:#3a3a3e;
-  --text:#fafafa;
-  --text2:#a1a1aa;
-  --text3:#71717a;
-  --text4:#52525b;
-  --accent:#7c3aed;
-  --accent2:#8b5cf6;
-  --accent3:#a78bfa;
-  --accent-glow:rgba(124,58,237,0.25);
-  --accent-dim:rgba(124,58,237,0.12);
-  --green:#22c55e;
-  --green-dim:rgba(34,197,94,0.12);
-  --red:#ef4444;
-  --red-dim:rgba(239,68,68,0.12);
-  --amber:#f59e0b;
-  --amber-dim:rgba(245,158,11,0.12);
-  --cyan:#06b6d4;
-  --cyan-dim:rgba(6,182,212,0.12);
-  --r:10px;--r-sm:6px;--r-xs:4px;
-  --sw:240px;
-  --sh:0 0 0 1px var(--border);
-  --sh-lg:0 20px 60px rgba(0,0,0,0.6);
-  --sh-glow:0 0 30px var(--accent-glow);
+  --bg:#09090b;--bg2:#111113;--bg3:#18181b;--bg4:#1f1f23;--bg5:#27272a;
+  --border:#2a2a2e;--border2:#3a3a3e;
+  --text:#fafafa;--text2:#a1a1aa;--text3:#71717a;--text4:#52525b;
+  --accent:#7c3aed;--accent2:#8b5cf6;--accent3:#a78bfa;
+  --accent-glow:rgba(124,58,237,0.25);--accent-dim:rgba(124,58,237,0.12);
+  --green:#22c55e;--green-dim:rgba(34,197,94,0.12);
+  --red:#ef4444;--red-dim:rgba(239,68,68,0.12);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,0.12);
+  --cyan:#06b6d4;--cyan-dim:rgba(6,182,212,0.12);
+  --r:10px;--r-sm:6px;--r-xs:4px;--sw:248px;
+  --sh-lg:0 20px 60px rgba(0,0,0,0.55);
+  --tt-bg:#18181b;--tt-border:#3a3a3e;--tt-title:#fafafa;--tt-body:#a1a1aa;
 }
-html{height:100%;overflow:hidden}body{height:100%;overflow:hidden}
-body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.5;display:flex}
+html.light{
+  --bg:#f4f4f5;--bg2:#ffffff;--bg3:#ffffff;--bg4:#f4f4f5;--bg5:#e4e4e7;
+  --border:#e4e4e7;--border2:#d4d4d8;
+  --text:#18181b;--text2:#3f3f46;--text3:#71717a;--text4:#a1a1aa;
+  --accent-glow:rgba(124,58,237,0.18);--accent-dim:rgba(124,58,237,0.08);
+  --green-dim:rgba(34,197,94,0.1);--red-dim:rgba(239,68,68,0.1);--amber-dim:rgba(245,158,11,0.1);--cyan-dim:rgba(6,182,212,0.1);
+  --sh-lg:0 20px 50px rgba(0,0,0,0.12);
+}
+html,body{height:100%}
+html{overflow:hidden}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:13.5px;line-height:1.5;display:flex;height:100vh;overflow:hidden;transition:background .2s,color .2s}
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
 ::-webkit-scrollbar-thumb:hover{background:var(--text4)}
 
 /* ── SIDEBAR ── */
-.sidebar{
-  width:var(--sw);flex-shrink:0;
-  background:var(--bg2);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;
-  height:100vh;position:relative;z-index:10;
-}
-.sb-logo{
-  padding:20px 16px 16px;
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;gap:10px;
-}
-.sb-logo-mark{
-  width:32px;height:32px;border-radius:8px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  box-shadow:0 0 16px var(--accent-glow);
-}
+.sidebar{width:var(--sw);flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;height:100vh;min-height:0;transition:background .2s,border-color .2s}
+.sb-logo{padding:18px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.sb-logo-mark{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 16px var(--accent-glow)}
 .sb-logo-mark svg{width:16px;height:16px;fill:#fff}
-.sb-logo-name{
-  font-family:'Space Grotesk',sans-serif;
-  font-size:16px;font-weight:700;
-  background:linear-gradient(90deg,#fff 0%,var(--accent3) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  letter-spacing:-0.3px;
-}
-.sb-logo-tag{font-size:10px;color:var(--text4);letter-spacing:0.6px;text-transform:uppercase;margin-top:-1px}
+.sb-logo-name{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;background:linear-gradient(90deg,var(--text) 0%,var(--accent3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.3px}
+.sb-logo-tag{font-size:10px;color:var(--text4);letter-spacing:.6px;text-transform:uppercase;margin-top:-1px}
 
 .sb-nav{flex:1;overflow-y:auto;padding:10px 8px;min-height:0}
-.sb-section{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:var(--text4);padding:12px 8px 4px}
-.sb-item{
-  display:flex;align-items:center;gap:9px;
-  padding:8px 10px;border-radius:var(--r-sm);
-  cursor:pointer;color:var(--text3);
-  font-size:13px;font-weight:500;
-  transition:all .15s;user-select:none;position:relative;
-}
+.sb-section{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text4);padding:12px 8px 4px}
+.sb-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--r-sm);cursor:pointer;color:var(--text3);font-size:13px;font-weight:500;transition:all .15s;user-select:none;position:relative}
 .sb-item:hover{color:var(--text);background:var(--bg4)}
 .sb-item.active{color:var(--text);background:var(--accent-dim)}
-.sb-item.active::before{
-  content:'';position:absolute;left:0;top:20%;bottom:20%;
-  width:2px;background:var(--accent2);border-radius:2px;
-}
+.sb-item.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:2px;background:var(--accent2);border-radius:2px}
 .sb-item-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
 .sb-item.active .sb-item-icon{opacity:1;color:var(--accent3)}
-.sb-badge{
-  margin-left:auto;background:var(--accent);color:#fff;
-  font-size:10px;font-weight:700;
-  padding:1px 7px;border-radius:20px;min-width:20px;text-align:center;
-}
+.sb-badge{margin-left:auto;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:1px 7px;border-radius:20px;min-width:20px;text-align:center}
+.sb-badge.live{background:var(--green);animation:blink 2s ease infinite}
 
 .sb-footer{padding:12px 16px;border-top:1px solid var(--border)}
 .sb-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.sb-stat{
-  background:var(--bg4);border:1px solid var(--border);
-  border-radius:var(--r-sm);padding:8px 10px;
-}
+.sb-stat{background:var(--bg4);border:1px solid var(--border);border-radius:var(--r-sm);padding:8px 10px}
 .sb-stat-n{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;line-height:1;color:var(--text)}
 .sb-stat-l{font-size:10px;color:var(--text4);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
 
 /* ── MAIN ── */
 .main{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh;overflow:hidden;min-height:0}
+.topbar{height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;background:color-mix(in srgb, var(--bg) 80%, transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);flex-shrink:0;z-index:5}
+.topbar-left{display:flex;align-items:center;gap:8px;min-width:0}
+.topbar-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:var(--text);white-space:nowrap}
+.topbar-dot{width:4px;height:4px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.topbar-sub{font-size:12px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topbar-actions{display:flex;gap:8px;align-items:center;flex-shrink:0}
 
-/* TOPBAR */
-.topbar{
-  height:52px;display:flex;align-items:center;justify-content:space-between;
-  padding:0 24px;
-  background:rgba(9,9,11,.8);backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;z-index:5;
-}
-.topbar-left{display:flex;align-items:center;gap:8px}
-.topbar-title{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:var(--text)}
-.topbar-dot{width:4px;height:4px;border-radius:50%;background:var(--border2)}
-.topbar-sub{font-size:12px;color:var(--text3)}
-.topbar-actions{display:flex;gap:8px;align-items:center}
-
-/* BUTTONS */
-.btn{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:7px 14px;border-radius:var(--r-sm);
-  font-size:12.5px;font-weight:500;cursor:pointer;
-  transition:all .15s;border:1px solid transparent;white-space:nowrap;
-  font-family:'Inter',sans-serif;
-}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r-sm);font-size:12.5px;font-weight:500;cursor:pointer;transition:all .15s;border:1px solid transparent;white-space:nowrap;font-family:'Inter',sans-serif}
 .btn svg{width:13px;height:13px;flex-shrink:0}
 .btn-ghost{background:transparent;border-color:var(--border2);color:var(--text2)}
 .btn-ghost:hover{background:var(--bg4);border-color:var(--border2);color:var(--text)}
@@ -145,49 +85,47 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .btn-sm{padding:5px 10px;font-size:12px}
 .btn-icon{width:30px;height:30px;padding:0;justify-content:center;border-color:var(--border);background:var(--bg3);color:var(--text3)}
 .btn-icon:hover{background:var(--bg4);color:var(--text);border-color:var(--border2)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* CONTENT AREA */
+/* ── CONTENT ── */
 .content-area{flex:1;overflow-y:auto;overflow-x:hidden;min-height:0}
 .view{display:none;padding:24px}
 .view.active{display:block}
 
-/* ── CARDS ── */
-.card{
-  background:var(--bg3);
-  border:1px solid var(--border);
-  border-radius:var(--r);
-}
-.card-header{
-  padding:14px 18px 12px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-}
+.card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);transition:background .2s,border-color .2s}
+.card-header{padding:14px 18px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .card-title{font-size:13px;font-weight:600;color:var(--text)}
 .card-subtitle{font-size:11.5px;color:var(--text3);margin-top:1px}
 .card-body{padding:18px}
 
-/* ── GENERATOR ── */
+/* ── GENERATOR LAYOUT ── */
 .gen-layout{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+.gap12{display:flex;flex-direction:column;gap:12px}
+.mt8{margin-top:8px}.mt12{margin-top:12px}
 
-.url-row{display:flex;gap:8px;margin-bottom:18px}
+/* QR TYPE TABS */
+.qtype-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.qtype-tab{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:20px;font-size:12.5px;font-weight:500;cursor:pointer;border:1px solid var(--border2);background:var(--bg4);color:var(--text3);transition:all .15s}
+.qtype-tab:hover{color:var(--text);border-color:var(--accent3)}
+.qtype-tab.active{background:var(--accent-dim);border-color:rgba(124,58,237,.4);color:var(--accent3)}
+
+.type-field{display:none}
+.type-field.active{display:flex;flex-direction:column;gap:10px}
+
+.url-row{display:flex;gap:8px}
 .url-wrap{flex:1;position:relative}
 .url-wrap-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--text4);pointer-events:none}
-.url-inp{
-  width:100%;padding:9px 12px 9px 34px;
-  background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r-sm);
-  color:var(--text);font-size:13.5px;font-family:'Inter',sans-serif;outline:none;
-  transition:border-color .15s,box-shadow .15s;
-}
-.url-inp:focus{border-color:var(--accent2);box-shadow:0 0 0 3px var(--accent-dim);background:var(--bg5)}
-.url-inp::placeholder{color:var(--text4)}
+.inp,.url-inp,textarea.inp{width:100%;padding:9px 12px;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text);font-size:13.5px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s,box-shadow .15s,background .2s}
+.url-inp{padding-left:34px}
+.inp:focus,.url-inp:focus,textarea.inp:focus{border-color:var(--accent2);box-shadow:0 0 0 3px var(--accent-dim);background:var(--bg5)}
+.inp::placeholder,.url-inp::placeholder,textarea.inp::placeholder{color:var(--text4)}
+textarea.inp{resize:vertical;min-height:64px;font-family:'Inter',sans-serif}
+.fg2cols{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fl-sm label{display:block;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:5px}
 
 /* OPTION TABS */
-.opt-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:18px}
-.opt-tab{
-  padding:8px 14px;font-size:12.5px;font-weight:500;
-  color:var(--text3);cursor:pointer;border:none;background:none;
-  border-bottom:2px solid transparent;margin-bottom:-1px;
-  transition:color .12s,border-color .12s;
-}
+.opt-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:18px;flex-wrap:wrap}
+.opt-tab{padding:8px 14px;font-size:12.5px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .12s,border-color .12s}
 .opt-tab:hover{color:var(--text)}
 .opt-tab.active{color:var(--accent3);border-bottom-color:var(--accent2)}
 .opt-panel{display:none}
@@ -195,196 +133,109 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 /* FORM */
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.fg.cols3{grid-template-columns:1fr 1fr 1fr}
 .fg.full{grid-template-columns:1fr}
-.fl label{
-  display:block;font-size:11px;font-weight:500;
-  text-transform:uppercase;letter-spacing:.5px;
-  color:var(--text3);margin-bottom:5px;
-}
-.fl select,.fl input[type=range]{
-  width:100%;padding:8px 10px;
-  background:var(--bg4);border:1px solid var(--border2);
-  border-radius:var(--r-sm);color:var(--text);
-  font-size:13px;font-family:'Inter',sans-serif;
-  outline:none;cursor:pointer;
-}
+.fl label{display:block;font-size:11px;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:5px}
+.fl select,.fl input[type=range]{width:100%;padding:8px 10px;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r-sm);color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none;cursor:pointer}
 .fl select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
 .fl select:focus,.fl input:focus{border-color:var(--accent2);box-shadow:0 0 0 2px var(--accent-dim)}
-.fl select option{background:var(--bg4)}
 
-.color-row{
-  display:flex;align-items:center;gap:8px;
-  padding:7px 10px;
-  background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r-sm);
-}
-.color-swatch{width:22px;height:22px;border-radius:4px;border:1px solid var(--border2);cursor:pointer;overflow:hidden;flex-shrink:0}
-.color-swatch input[type=color]{width:30px;height:30px;border:none;background:none;padding:0;cursor:pointer;margin:-4px -8px;opacity:0;position:absolute}
-.color-swatch-preview{width:22px;height:22px;border-radius:3px;pointer-events:none}
+.color-row{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r-sm)}
+.color-swatch{width:22px;height:22px;border-radius:4px;border:1px solid var(--border2);cursor:pointer;position:relative;flex-shrink:0;overflow:hidden}
+.color-swatch input[type=color]{position:absolute;opacity:0;inset:0;cursor:pointer;width:100%;height:100%}
+.color-swatch-preview{width:100%;height:100%;pointer-events:none}
 .color-hex{font-size:12px;font-family:'Space Grotesk',monospace;color:var(--text2);flex:1}
 
 .range-wrap{display:flex;align-items:center;gap:8px}
 .range-wrap input[type=range]{flex:1;accent-color:var(--accent2)}
-.range-val{font-size:12px;font-weight:600;color:var(--text2);min-width:38px;text-align:right}
+
+/* TOGGLE SWITCH */
+.switch-row{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--r-sm)}
+.switch-label{font-size:12.5px;color:var(--text2);font-weight:500}
+.switch{position:relative;width:38px;height:22px;flex-shrink:0;cursor:pointer}
+.switch input{opacity:0;width:0;height:0}
+.switch-slider{position:absolute;inset:0;background:var(--bg5);border:1px solid var(--border2);border-radius:22px;transition:.2s}
+.switch-slider::before{content:'';position:absolute;width:16px;height:16px;left:2px;top:2px;background:var(--text4);border-radius:50%;transition:.2s}
+.switch input:checked + .switch-slider{background:var(--accent-dim);border-color:rgba(124,58,237,.4)}
+.switch input:checked + .switch-slider::before{transform:translateX(15px);background:var(--accent2)}
 
 /* LOGO UPLOAD */
-.logo-drop{
-  border:1.5px dashed var(--border2);border-radius:var(--r);
-  padding:20px;text-align:center;cursor:pointer;
-  transition:border-color .15s,background .15s;position:relative;
-}
+.logo-drop{border:1.5px dashed var(--border2);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;position:relative}
 .logo-drop:hover{border-color:var(--accent2);background:var(--accent-dim)}
 .logo-drop input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
 .logo-drop-icon{width:28px;height:28px;color:var(--text4);margin:0 auto 8px;display:block}
 .logo-drop p{font-size:13px;color:var(--text3)}
 .logo-drop span{font-size:11px;color:var(--text4)}
-
 .logo-info{display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg4);border-radius:var(--r-sm);border:1px solid var(--border)}
 .logo-thumb{width:38px;height:38px;object-fit:contain;border-radius:4px;background:var(--bg5);border:1px solid var(--border)}
 .logo-name{flex:1;font-size:12.5px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* PREVIEW PANEL */
+/* PREVIEW */
 .preview-sticky{position:sticky;top:0}
-.qr-wrap{
-  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
-  background:#fff;border-radius:var(--r);
-  border:1px solid var(--border);position:relative;overflow:hidden;
-  min-height:220px;
-}
-.qr-empty{display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text4)}
-.qr-empty svg{width:44px;height:44px;opacity:.15}
-.qr-empty p{font-size:12.5px;text-align:center;color:var(--text4)}
+.qr-wrap{aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:var(--r);border:1px solid var(--border);position:relative;overflow:hidden;min-height:220px}
+.qr-empty{display:flex;flex-direction:column;align-items:center;gap:8px;color:#c4c4c8}
+.qr-empty svg{width:44px;height:44px;opacity:.4}
+.qr-empty p{font-size:12.5px;text-align:center;color:#a8a8ad}
 #qr-canvas-final{display:none;width:100% !important;height:auto !important;max-width:280px;border-radius:4px}
-#qr-raw-div{position:fixed;left:-9999px;top:-9999px;opacity:0;}
+.qr-url-label{text-align:center;font-size:11.5px;color:var(--text4);padding:8px 4px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.preview-btns{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-top:10px}
+.preview-btns .btn{justify-content:center;font-size:11px;padding:7px 4px}
 
-.qr-url-label{
-  text-align:center;font-size:11.5px;color:var(--text4);
-  padding:8px 4px 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
-
-.preview-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:10px}
-.preview-btns .btn{justify-content:center;font-size:11.5px;padding:7px 4px}
-
-/* SCAN BOX — the star */
-.scan-box{
-  margin-top:12px;
-  background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(139,92,246,.05));
-  border:1px solid rgba(124,58,237,.3);
-  border-radius:var(--r);padding:16px;
-  display:none;
-  position:relative;overflow:hidden;
-}
-.scan-box::before{
-  content:'';position:absolute;inset:-40%;
-  background:radial-gradient(circle at 70% 30%, rgba(124,58,237,.08) 0%, transparent 60%);
-  pointer-events:none;
-}
+/* SCAN BOX */
+.scan-box{margin-top:12px;background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(139,92,246,.04));border:1px solid rgba(124,58,237,.3);border-radius:var(--r);padding:16px;display:none;position:relative;overflow:hidden}
+.scan-box::before{content:'';position:absolute;inset:-40%;background:radial-gradient(circle at 70% 30%, rgba(124,58,237,.08) 0%, transparent 60%);pointer-events:none}
 .scan-box-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}
 .scan-counter-col{flex:1}
-.scan-big{
-  font-family:'Space Grotesk',sans-serif;
-  font-size:48px;font-weight:700;line-height:1;
-  background:linear-gradient(135deg,#fff,var(--accent3));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  letter-spacing:-1px;
-}
+.scan-big{font-family:'Space Grotesk',sans-serif;font-size:48px;font-weight:700;line-height:1;background:linear-gradient(135deg,var(--text),var(--accent3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-1px}
 .scan-label-row{display:flex;align-items:center;gap:6px;margin-top:4px}
 .scan-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex-shrink:0;animation:blink 2s ease infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
 .scan-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px}
-
 .scan-btn-col{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
-.scan-add-btn{
-  background:var(--accent);color:#fff;
-  border:none;border-radius:var(--r-sm);
-  padding:10px 16px;font-size:13px;font-weight:600;
-  cursor:pointer;transition:all .15s;
-  display:flex;align-items:center;gap:6px;
-  box-shadow:0 0 20px var(--accent-glow);
-  font-family:'Inter',sans-serif;
-}
+.scan-add-btn{background:var(--accent);color:#fff;border:none;border-radius:var(--r-sm);padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;box-shadow:0 0 20px var(--accent-glow);font-family:'Inter',sans-serif}
 .scan-add-btn:hover{background:var(--accent2);box-shadow:0 0 30px var(--accent-glow);transform:translateY(-1px)}
 .scan-add-btn:active{transform:scale(.95)}
 .scan-add-btn svg{width:14px;height:14px}
-
-.scan-reset-btn{
-  background:transparent;color:var(--text4);
-  border:1px solid var(--border);border-radius:var(--r-sm);
-  padding:6px 12px;font-size:11.5px;font-weight:500;
-  cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif;
-}
+.scan-reset-btn{background:transparent;color:var(--text4);border:1px solid var(--border);border-radius:var(--r-sm);padding:6px 12px;font-size:11.5px;font-weight:500;cursor:pointer;transition:all .15s;font-family:'Inter',sans-serif}
 .scan-reset-btn:hover{color:var(--red);border-color:var(--red);background:var(--red-dim)}
-
-.scan-timeline{margin-top:4px}
 .scan-timeline-label{font-size:10.5px;color:var(--text4);margin-bottom:6px}
-.scan-timeline-log{
-  max-height:90px;overflow-y:auto;
-  display:flex;flex-direction:column;gap:3px;
-}
-.scan-log-entry{
-  display:flex;align-items:center;gap:8px;
-  padding:4px 8px;background:var(--bg5);border-radius:var(--r-xs);
-  font-size:11.5px;color:var(--text2);
-}
+.scan-timeline-log{max-height:90px;overflow-y:auto;display:flex;flex-direction:column;gap:3px}
+.scan-log-entry{display:flex;align-items:center;gap:8px;padding:4px 8px;background:var(--bg5);border-radius:var(--r-xs);font-size:11.5px;color:var(--text2)}
 .scan-log-time{color:var(--text4);min-width:48px}
 .scan-log-flag{font-size:13px}
-.scan-sparkline{height:44px;margin-top:10px}
+.scan-sparkline{height:44px;margin-top:10px;width:100%}
 
 /* ── HISTORY ── */
-.hist-toolbar{display:flex;gap:8px;margin-bottom:16px;align-items:center}
-.hist-search{
-  flex:1;padding:8px 12px 8px 34px;
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:var(--r-sm);color:var(--text);font-size:13px;
-  outline:none;font-family:'Inter',sans-serif;position:relative;
-}
-.hist-search-wrap{flex:1;position:relative}
+.hist-toolbar{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.hist-search-wrap{flex:1;position:relative;min-width:180px}
 .hist-search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:var(--text4);pointer-events:none}
+.hist-search{width:100%;padding:8px 12px 8px 34px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text);font-size:13px;outline:none;font-family:'Inter',sans-serif}
 .hist-search:focus{border-color:var(--accent2)}
 .hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
-.hcard{
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:var(--r);overflow:hidden;cursor:pointer;
-  transition:border-color .15s,box-shadow .15s,transform .12s;
-}
-.hcard:hover{border-color:var(--border2);box-shadow:0 4px 20px rgba(0,0,0,.4);transform:translateY(-1px)}
+.hcard{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s,transform .12s}
+.hcard:hover{border-color:var(--border2);box-shadow:0 4px 20px rgba(0,0,0,.18);transform:translateY(-1px)}
 .hcard.active{border-color:var(--accent2);box-shadow:0 0 0 2px var(--accent-dim)}
 .hcard-top{display:flex;gap:12px;padding:14px 14px 10px;align-items:center}
-.hcard-thumb{
-  width:52px;height:52px;flex-shrink:0;
-  background:#fff;border-radius:6px;
-  border:1px solid var(--border);overflow:hidden;
-  display:flex;align-items:center;justify-content:center;
-}
-.hcard-thumb canvas{width:52px !important;height:52px !important}
+.hcard-thumb{width:52px;height:52px;flex-shrink:0;background:#fff;border-radius:6px;border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center}
+.hcard-thumb canvas{width:52px !important;height:52px !important;display:block}
 .hcard-info{flex:1;min-width:0}
-.hcard-domain{font-size:13.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcard-domain{font-size:13.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:5px}
 .hcard-url{font-size:11px;color:var(--text4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
 .hcard-time{font-size:11px;color:var(--text4);margin-top:4px}
-.hcard-bottom{
-  padding:8px 14px 12px;border-top:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.scan-pill{
-  display:inline-flex;align-items:center;gap:4px;
-  background:var(--accent-dim);color:var(--accent3);
-  font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px;
-  border:1px solid rgba(124,58,237,.2);
-}
+.hcard-bottom{padding:8px 14px 12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.scan-pill{display:inline-flex;align-items:center;gap:4px;background:var(--accent-dim);color:var(--accent3);font-size:11.5px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid rgba(124,58,237,.2)}
 .scan-pill svg{width:10px;height:10px}
 .hcard-actions{display:flex;gap:4px}
+.type-pill{display:inline-flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.fav-star{cursor:pointer;flex-shrink:0;transition:transform .12s}
+.fav-star:hover{transform:scale(1.2)}
+.fav-star svg{width:14px;height:14px;color:var(--text4)}
+.fav-star.active svg{color:var(--amber);fill:var(--amber)}
+.sort-select{padding:7px 10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r-sm);color:var(--text2);font-size:12.5px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px}
 
 /* ── ANALYTICS ── */
-.analytics-layout{display:flex;flex-direction:column;gap:16px}
 .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.kpi{
-  background:var(--bg3);border:1px solid var(--border);
-  border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden;
-}
-.kpi::after{
-  content:'';position:absolute;top:0;right:0;width:60px;height:60px;
-  border-radius:50%;transform:translate(20px,-20px);opacity:.08;
-}
+.kpi{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;top:0;right:0;width:60px;height:60px;border-radius:50%;transform:translate(20px,-20px);opacity:.08}
 .kpi-codes::after{background:var(--accent)}
 .kpi-scans::after{background:var(--green)}
 .kpi-avg::after{background:var(--amber)}
@@ -393,6 +244,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .kpi-val{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;line-height:1;color:var(--text)}
 .kpi-delta{font-size:11.5px;margin-top:6px;display:flex;align-items:center;gap:4px}
 .kpi-delta.up{color:var(--green)}
+.kpi-delta.down{color:var(--red)}
 .kpi-delta.neu{color:var(--text4)}
 .kpi-delta svg{width:12px;height:12px}
 .kpi-bar{height:3px;border-radius:3px;margin-top:10px;background:var(--bg5)}
@@ -406,24 +258,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .charts-row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .chart-wrap{height:230px;position:relative}
 
-/* LEADERBOARD */
-.lb-row{
-  display:flex;align-items:center;gap:10px;
-  padding:9px 14px;border-bottom:1px solid var(--border);
-  transition:background .1s;
-}
+.lb-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--border);transition:background .1s}
 .lb-row:last-child{border-bottom:none}
 .lb-row:hover{background:var(--bg4)}
-.lb-rank{
-  font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;
-  width:22px;text-align:center;flex-shrink:0;
-}
+.lb-rank{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;width:22px;text-align:center;flex-shrink:0}
 .lb-rank.gold{color:#f59e0b}
 .lb-rank.silver{color:#94a3b8}
-.lb-rank.bronze{color:#92400e}
+.lb-rank.bronze{color:#b45309}
 .lb-rank.other{color:var(--text4)}
 .lb-thumb{width:30px;height:30px;background:#fff;border-radius:4px;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.lb-thumb canvas{width:30px !important;height:30px !important}
+.lb-thumb canvas{width:30px !important;height:30px !important;display:block}
 .lb-info{flex:1;min-width:0}
 .lb-domain{font-size:13px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lb-url{font-size:11px;color:var(--text4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -432,26 +276,17 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .lb-bar-wrap{width:80px;height:4px;background:var(--bg5);border-radius:4px}
 .lb-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s ease}
 
-/* HEATMAP */
-.heatmap-grid{
-  display:grid;
-  grid-template-columns:repeat(24,1fr);
-  grid-template-rows:repeat(7,1fr);
-  gap:2px;margin-top:4px;
-}
-.hm-cell{
-  aspect-ratio:1;border-radius:2px;
-  background:var(--bg5);transition:opacity .2s;cursor:default;
-}
+.heatmap-grid{display:grid;grid-template-columns:repeat(24,1fr);grid-template-rows:repeat(7,1fr);gap:2px;margin-top:4px}
+.hm-cell{aspect-ratio:1;border-radius:2px;background:var(--bg5);transition:opacity .2s;cursor:default}
 .hm-cell:hover{outline:1px solid var(--accent3)}
-.hm-labels-days{display:grid;grid-template-rows:repeat(7,1fr);gap:2px;margin-right:6px;padding-top:0}
+.hm-labels-days{display:grid;grid-template-rows:repeat(7,1fr);gap:2px;margin-right:6px}
 .hm-label{font-size:9px;color:var(--text4);display:flex;align-items:center;height:100%}
 .hm-legend{display:flex;align-items:center;gap:6px;margin-top:8px;justify-content:flex-end}
 .hm-leg-label{font-size:10px;color:var(--text4)}
 .hm-leg-swatches{display:flex;gap:2px}
 .hm-leg-swatch{width:12px;height:12px;border-radius:2px}
 
-/* GEO TABLE */
+/* GEO */
 .geo-table{width:100%;border-collapse:collapse}
 .geo-table th{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text4);padding:8px 0;text-align:left;border-bottom:1px solid var(--border)}
 .geo-table td{padding:9px 0;font-size:13px;border-bottom:1px solid var(--border);color:var(--text2);vertical-align:middle}
@@ -460,13 +295,9 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .geo-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--cyan),var(--accent2));transition:width .4s ease}
 .geo-pct{font-size:11px;font-weight:600;color:var(--text4);min-width:32px;text-align:right}
 
-/* REALTIME FEED */
-.rtfeed{max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
-.rtfeed-entry{
-  display:flex;align-items:center;gap:10px;
-  padding:6px 10px;background:var(--bg4);border-radius:var(--r-xs);
-  border:1px solid var(--border);animation:fadeSlide .3s ease;
-}
+/* REALTIME */
+.rtfeed{max-height:280px;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+.rtfeed-entry{display:flex;align-items:center;gap:10px;padding:6px 10px;background:var(--bg4);border-radius:var(--r-xs);border:1px solid var(--border);animation:fadeSlide .3s ease}
 @keyframes fadeSlide{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .rtfeed-flag{font-size:16px;flex-shrink:0}
 .rtfeed-info{flex:1;min-width:0}
@@ -475,67 +306,64 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .rtfeed-time{font-size:11px;color:var(--text4);flex-shrink:0}
 .rtfeed-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 6px var(--green)}
 
-/* TIMELINE CHART */
-.timeline-filters{display:flex;gap:4px;margin-bottom:14px}
-.tl-filter{
-  padding:4px 10px;font-size:11.5px;font-weight:500;
-  border:1px solid var(--border);border-radius:var(--r-xs);
-  background:transparent;color:var(--text3);cursor:pointer;transition:all .12s;
-  font-family:'Inter',sans-serif;
-}
+/* TIMELINE FILTERS */
+.timeline-filters{display:flex;gap:4px}
+.tl-filter{padding:4px 10px;font-size:11.5px;font-weight:500;border:1px solid var(--border);border-radius:var(--r-xs);background:transparent;color:var(--text3);cursor:pointer;transition:all .12s;font-family:'Inter',sans-serif}
 .tl-filter:hover{color:var(--text);border-color:var(--border2)}
 .tl-filter.active{background:var(--accent-dim);border-color:rgba(124,58,237,.3);color:var(--accent3)}
 
 /* MODAL */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .18s;backdrop-filter:blur(4px)}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .18s;backdrop-filter:blur(4px)}
 .overlay.open{opacity:1;pointer-events:all}
 .modal{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);width:100%;max-width:400px;box-shadow:var(--sh-lg)}
-.modal-h{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.modal-title{font-size:14px;font-weight:600}
+.modal-h{padding:16px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.modal-title{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .modal-b{padding:18px}
-.modal-f{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.modal-f{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 .modal-qr-center{display:flex;justify-content:center;margin-bottom:14px}
 .modal-qr-center canvas{border-radius:6px;border:1px solid var(--border)}
 .modal-url-box{background:var(--bg4);border-radius:var(--r-xs);padding:10px 12px;font-size:12px;color:var(--text3);word-break:break-all;border:1px solid var(--border)}
+.modal-stats{display:flex;gap:16px;margin-top:12px;justify-content:center}
+.modal-stat{text-align:center}
+.modal-stat-n{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;color:var(--text)}
+.modal-stat-l{font-size:10.5px;color:var(--text4);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
 
 /* TOAST */
-.toasts{position:fixed;bottom:22px;right:22px;z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
-.toast{
-  background:var(--bg3);border:1px solid var(--border2);
-  color:var(--text);padding:10px 14px;border-radius:var(--r);
-  font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;
-  box-shadow:0 8px 24px rgba(0,0,0,.4);
-  animation:tin .2s ease;pointer-events:all;
-}
-.toast.ok{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.08)}
-.toast.err{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.08)}
-.toast.info{border-color:rgba(124,58,237,.3);background:rgba(124,58,237,.08)}
+.toasts{position:fixed;bottom:22px;right:22px;z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none;max-width:320px}
+.toast{background:var(--bg3);border:1px solid var(--border2);color:var(--text);padding:10px 14px;border-radius:var(--r);font-size:13px;font-weight:500;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.35);animation:tin .2s ease;pointer-events:all}
+.toast.ok{border-color:rgba(34,197,94,.3);background:var(--green-dim)}
+.toast.err{border-color:rgba(239,68,68,.3);background:var(--red-dim)}
+.toast.info{border-color:rgba(124,58,237,.3);background:var(--accent-dim)}
 @keyframes tin{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
 @keyframes tout{to{opacity:0;transform:translateX(16px)}}
 .toast.out{animation:tout .18s ease forwards}
 
 /* EMPTY */
 .empty{text-align:center;padding:56px 20px;color:var(--text4)}
-.empty svg{width:48px;height:48px;opacity:.12;margin:0 auto 12px;display:block}
+.empty svg{width:48px;height:48px;opacity:.18;margin:0 auto 12px;display:block}
 .empty h3{font-size:14px;font-weight:600;color:var(--text3);margin-bottom:4px}
 .empty p{font-size:12.5px;max-width:260px;margin:0 auto}
 
-/* UTILS */
-.mt8{margin-top:8px}
-.mt12{margin-top:12px}
-.mt16{margin-top:16px}
-.gap12{display:flex;flex-direction:column;gap:12px}
-.sep{height:1px;background:var(--border);margin:16px 0}
 .chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
 .chip-green{background:var(--green-dim);color:var(--green);border:1px solid rgba(34,197,94,.2)}
-.chip-amber{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
-.chip-red{background:var(--red-dim);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+
+/* RESPONSIVE */
+@media (max-width:980px){
+  .gen-layout{grid-template-columns:1fr}
+  .preview-sticky{position:static}
+  .kpi-row{grid-template-columns:1fr 1fr}
+  .charts-row,.charts-row2{grid-template-columns:1fr}
+}
+@media (max-width:680px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:50;transform:translateX(-100%);transition:transform .2s}
+  .sidebar.open{transform:translateX(0)}
+  .topbar-sub{display:none}
+}
 </style>
 </head>
 <body>
-
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="sb-logo">
     <div class="sb-logo-mark">
       <svg viewBox="0 0 24 24"><path d="M3 3h7v7H3V3zm2 2v3h3V5H5zm9-2h7v7h-7V3zm2 2v3h3V5h-3zM3 14h7v7H3v-7zm2 2v3h3v-3H5zm11 1h2v2h-2v-2zm2-2h2v2h-2v-2zm-4 0h2v2h-2v-2zm2 4h2v2h-2v-2zm2 2h2v2h-2v-2zm-4-2h2v2h-2v-2z"/></svg>
@@ -566,7 +394,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="sb-item" data-view="realtime">
       <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
       Реальний час
-      <span class="sb-badge" id="rt-badge" style="background:var(--green)">●</span>
+      <span class="sb-badge live" id="rt-badge">●</span>
     </div>
     <div class="sb-item" data-view="geo">
       <svg class="sb-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
@@ -586,11 +414,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <div class="main">
   <header class="topbar">
     <div class="topbar-left">
+      <button class="btn btn-icon btn-sm" id="burger-btn" style="display:none" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <span class="topbar-title" id="tb-title">Генератор QR-кодів</span>
       <div class="topbar-dot"></div>
-      <span class="topbar-sub" id="tb-sub">Введіть URL і налаштуйте стиль</span>
+      <span class="topbar-sub" id="tb-sub">Створюйте та відстежуйте QR-коди</span>
     </div>
     <div class="topbar-actions">
+      <button class="btn btn-icon btn-sm" onclick="toggleTheme()" title="Тема">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-moon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="theme-icon-sun" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
       <button class="btn btn-ghost btn-sm" onclick="exportCSV()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         CSV
@@ -609,25 +444,80 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <div class="gen-layout">
         <div class="gap12">
 
-          <!-- URL -->
-          <div class="card">
+          <!-- CONTENT CARD -->
+          <div class="card" id="content-card">
             <div class="card-header">
-              <div><div class="card-title">URL-адреса</div><div class="card-subtitle">QR оновлюється миттєво при наборі</div></div>
+              <div><div class="card-title">Зміст QR-коду</div><div class="card-subtitle">QR оновлюється миттєво при наборі</div></div>
             </div>
             <div class="card-body">
-              <div class="url-row">
-                <div class="url-wrap">
-                  <svg class="url-wrap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-                  <input class="url-inp" id="url-inp" type="url" placeholder="https://example.com" autocomplete="off"/>
+              <div class="qtype-tabs">
+                <div class="qtype-tab active" data-type="url" onclick="setQType('url')">🔗 URL</div>
+                <div class="qtype-tab" data-type="text" onclick="setQType('text')">📝 Текст</div>
+                <div class="qtype-tab" data-type="email" onclick="setQType('email')">✉️ Email</div>
+                <div class="qtype-tab" data-type="phone" onclick="setQType('phone')">📞 Телефон</div>
+                <div class="qtype-tab" data-type="sms" onclick="setQType('sms')">💬 SMS</div>
+                <div class="qtype-tab" data-type="wifi" onclick="setQType('wifi')">📶 Wi-Fi</div>
+              </div>
+
+              <!-- URL -->
+              <div class="type-field active" data-type="url">
+                <div class="url-row">
+                  <div class="url-wrap">
+                    <svg class="url-wrap-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                    <input class="url-inp inp" id="url-inp" type="url" placeholder="https://example.com" autocomplete="off"/>
+                  </div>
+                  <button class="btn btn-accent" onclick="generateQR()">Згенерувати</button>
                 </div>
-                <button class="btn btn-accent" onclick="generateQR(false)">Згенерувати</button>
+              </div>
+
+              <!-- TEXT -->
+              <div class="type-field" data-type="text">
+                <textarea class="inp" id="text-inp" rows="3" placeholder="Введіть будь-який текст…"></textarea>
+                <button class="btn btn-accent" style="align-self:flex-start" onclick="generateQR()">Згенерувати</button>
+              </div>
+
+              <!-- EMAIL -->
+              <div class="type-field" data-type="email">
+                <input class="inp" id="email-to" type="email" placeholder="example@email.com"/>
+                <div class="fg2cols">
+                  <input class="inp" id="email-subject" type="text" placeholder="Тема (опційно)"/>
+                  <input class="inp" id="email-body" type="text" placeholder="Текст листа (опційно)"/>
+                </div>
+                <button class="btn btn-accent" style="align-self:flex-start" onclick="generateQR()">Згенерувати</button>
+              </div>
+
+              <!-- PHONE -->
+              <div class="type-field" data-type="phone">
+                <input class="inp" id="phone-inp" type="tel" placeholder="+380 XX XXX XX XX"/>
+                <button class="btn btn-accent" style="align-self:flex-start" onclick="generateQR()">Згенерувати</button>
+              </div>
+
+              <!-- SMS -->
+              <div class="type-field" data-type="sms">
+                <input class="inp" id="sms-phone" type="tel" placeholder="+380 XX XXX XX XX"/>
+                <input class="inp" id="sms-msg" type="text" placeholder="Текст повідомлення (опційно)"/>
+                <button class="btn btn-accent" style="align-self:flex-start" onclick="generateQR()">Згенерувати</button>
+              </div>
+
+              <!-- WIFI -->
+              <div class="type-field" data-type="wifi">
+                <input class="inp" id="wifi-ssid" type="text" placeholder="Назва мережі (SSID)"/>
+                <div class="fg2cols">
+                  <input class="inp" id="wifi-pass" type="text" placeholder="Пароль"/>
+                  <select class="inp" id="wifi-enc">
+                    <option value="WPA">WPA/WPA2</option>
+                    <option value="WEP">WEP</option>
+                    <option value="nopass">Без пароля</option>
+                  </select>
+                </div>
+                <button class="btn btn-accent" style="align-self:flex-start" onclick="generateQR()">Згенерувати</button>
               </div>
             </div>
           </div>
 
           <!-- SETTINGS -->
           <div class="card">
-            <div class="card-header"><div class="card-title">Налаштування</div></div>
+            <div class="card-header"><div class="card-title">Налаштування дизайну</div></div>
             <div class="card-body">
               <div class="opt-tabs">
                 <button class="opt-tab active" onclick="optTab('style',this)">Стиль</button>
@@ -638,7 +528,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
               <!-- style -->
               <div class="opt-panel active" id="op-style">
                 <div class="fg">
-                  <div class="fl"><label>Корекція</label>
+                  <div class="fl"><label>Корекція помилок</label>
                     <select id="ecl" onchange="liveUpdate()">
                       <option value="L">L — мінімальна</option>
                       <option value="M" selected>M — стандартна</option>
@@ -646,7 +536,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
                       <option value="H">H — максимальна</option>
                     </select>
                   </div>
-                  <div class="fl"><label>Модулі</label>
+                  <div class="fl"><label>Стиль модулів</label>
                     <select id="mod" onchange="liveUpdate()">
                       <option value="sq">Квадрати</option>
                       <option value="rd">Округлі</option>
@@ -654,28 +544,36 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
                     </select>
                   </div>
                   <div class="fl"><label>Колір QR</label>
-                    <div class="color-row" style="position:relative">
-                      <div class="color-swatch" style="position:relative">
-                        <div class="color-swatch-preview" id="fg-preview" style="background:#0d0d0d"></div>
-                        <input type="color" id="fg-color" value="#0d0d0d" style="position:absolute;opacity:0;inset:0;cursor:pointer;" oninput="syncColor('fg')"/>
-                      </div>
+                    <div class="color-row">
+                      <div class="color-swatch"><div class="color-swatch-preview" id="fg-preview" style="background:#0d0d0d"></div><input type="color" id="fg-color" value="#0d0d0d" oninput="syncColor('fg')"/></div>
                       <span class="color-hex" id="fg-hex">#0d0d0d</span>
                     </div>
                   </div>
                   <div class="fl"><label>Фон</label>
-                    <div class="color-row" style="position:relative">
-                      <div class="color-swatch" style="position:relative">
-                        <div class="color-swatch-preview" id="bg-preview" style="background:#ffffff"></div>
-                        <input type="color" id="bg-color" value="#ffffff" style="position:absolute;opacity:0;inset:0;cursor:pointer;" oninput="syncColor('bg')"/>
-                      </div>
+                    <div class="color-row">
+                      <div class="color-swatch"><div class="color-swatch-preview" id="bg-preview" style="background:#ffffff"></div><input type="color" id="bg-color" value="#ffffff" oninput="syncColor('bg')"/></div>
                       <span class="color-hex" id="bg-hex">#ffffff</span>
                     </div>
                   </div>
-                  <div class="fl" style="grid-column:1/-1"><label>Розмір: <span id="sz-lbl">256px</span></label>
-                    <div class="range-wrap"><input type="range" id="qr-sz" min="128" max="512" value="256" step="8" oninput="document.getElementById('sz-lbl').textContent=this.value+'px';liveUpdate()"/></div>
+
+                  <div class="fl" style="grid-column:1/-1">
+                    <div class="switch-row">
+                      <span class="switch-label">Градієнтний колір QR</span>
+                      <label class="switch"><input type="checkbox" id="gradient-toggle" onchange="toggleGradient()"><span class="switch-slider"></span></label>
+                    </div>
                   </div>
-                  <div class="fl" style="grid-column:1/-1"><label>Відступ: <span id="pad-lbl">4</span></label>
-                    <div class="range-wrap"><input type="range" id="qr-pad" min="0" max="12" value="4" step="1" oninput="document.getElementById('pad-lbl').textContent=this.value;liveUpdate()"/></div>
+                  <div class="fl" id="gradient-color-fl" style="display:none"><label>Другий колір градієнта</label>
+                    <div class="color-row">
+                      <div class="color-swatch"><div class="color-swatch-preview" id="fg2-preview" style="background:#06b6d4"></div><input type="color" id="fg2-color" value="#06b6d4" oninput="syncColor('fg2')"/></div>
+                      <span class="color-hex" id="fg2-hex">#06b6d4</span>
+                    </div>
+                  </div>
+
+                  <div class="fl" style="grid-column:1/-1"><label>Розмір: <span id="sz-lbl">320px</span></label>
+                    <div class="range-wrap"><input type="range" id="qr-sz" min="160" max="640" value="320" step="8" oninput="document.getElementById('sz-lbl').textContent=this.value+'px';liveUpdate()"/></div>
+                  </div>
+                  <div class="fl" style="grid-column:1/-1"><label>Відступ (квадрати поля): <span id="pad-lbl">2</span></label>
+                    <div class="range-wrap"><input type="range" id="qr-pad" min="0" max="8" value="2" step="1" oninput="document.getElementById('pad-lbl').textContent=this.value;liveUpdate()"/></div>
                   </div>
                 </div>
               </div>
@@ -687,7 +585,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
                     <input type="file" accept="image/*" id="logo-file" onchange="onLogoFile(this)"/>
                     <svg class="logo-drop-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
                     <p>Перетягніть або виберіть файл</p>
-                    <span>PNG, SVG, JPG · до 2 МБ</span>
+                    <span>PNG, SVG, JPG · до 2 МБ · рекомендована корекція H</span>
                   </div>
                 </div>
                 <div id="logo-info-area" style="display:none">
@@ -731,15 +629,19 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
               <div class="qr-wrap" id="qr-wrap">
                 <div class="qr-empty" id="qr-empty">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-                  <p>Введіть URL<br>для генерації</p>
+                  <p>Заповніть форму<br>для генерації</p>
                 </div>
                 <canvas id="qr-canvas-final"></canvas>
               </div>
               <div class="qr-url-label" id="qr-url-label"></div>
               <div id="preview-btns" style="display:none" class="preview-btns">
-                <button class="btn btn-ghost btn-sm" onclick="copyURL()">
+                <button class="btn btn-ghost btn-sm" onclick="copyURL()" title="Копіювати зміст">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                  URL
+                  Текст
+                </button>
+                <button class="btn btn-ghost btn-sm" onclick="copyImage()" title="Копіювати зображення">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  Img
                 </button>
                 <button class="btn btn-ghost btn-sm" onclick="downloadQR()">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -766,12 +668,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
               <div class="scan-btn-col">
                 <button class="scan-add-btn" id="scan-add-btn" onclick="addScan()">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Скануванн
+                  Скан
                 </button>
                 <button class="scan-reset-btn" onclick="resetScans()">Скинути</button>
               </div>
             </div>
-            <div class="scan-timeline">
+            <div>
               <div class="scan-timeline-label">Останні сканування</div>
               <div class="scan-timeline-log" id="scan-log"></div>
             </div>
@@ -786,8 +688,18 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       <div class="hist-toolbar">
         <div class="hist-search-wrap">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="hist-search" id="hist-search" placeholder="Пошук по URL або домену…" oninput="renderHistory()"/>
+          <input class="hist-search" id="hist-search" placeholder="Пошук за змістом, доменом, типом…" oninput="renderHistory()"/>
         </div>
+        <select class="sort-select" id="hist-sort" onchange="renderHistory()">
+          <option value="new">Спочатку нові</option>
+          <option value="old">Спочатку старі</option>
+          <option value="scans">За сканами ↓</option>
+          <option value="az">A → Я</option>
+        </select>
+        <button class="btn btn-ghost btn-sm" id="fav-filter-btn" onclick="toggleFavFilter()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Лише улюблені
+        </button>
         <button class="btn btn-ghost btn-sm" onclick="clearAll()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
           Очистити всі
@@ -798,7 +710,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
     <!-- ═══ ANALYTICS ═══ -->
     <div class="view" id="view-analytics">
-      <div class="analytics-layout">
+      <div class="gap12">
 
         <div class="kpi-row">
           <div class="kpi kpi-codes">
@@ -810,10 +722,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           <div class="kpi kpi-scans">
             <div class="kpi-label">Сканувань</div>
             <div class="kpi-val" id="kpi-scans">0</div>
-            <div class="kpi-delta up" id="kpi-scans-d">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
-              —
-            </div>
+            <div class="kpi-delta up" id="kpi-scans-d">—</div>
             <div class="kpi-bar"><div class="kpi-bar-fill" id="kpi-scans-bar" style="width:0%"></div></div>
           </div>
           <div class="kpi kpi-avg">
@@ -825,13 +734,12 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
           <div class="kpi kpi-rate">
             <div class="kpi-label">Активних</div>
             <div class="kpi-val" id="kpi-rate">—</div>
-            <div class="kpi-delta neu" id="kpi-rate-d">з активністю</div>
+            <div class="kpi-delta neu" id="kpi-rate-d">мають скани</div>
             <div class="kpi-bar"><div class="kpi-bar-fill" id="kpi-rate-bar" style="width:0%"></div></div>
           </div>
         </div>
 
         <div class="charts-row">
-          <!-- Timeseries -->
           <div class="card">
             <div class="card-header">
               <div class="card-title">Сканування в часі</div>
@@ -843,7 +751,6 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
             </div>
             <div class="card-body"><div class="chart-wrap"><canvas id="timeline-chart"></canvas></div></div>
           </div>
-          <!-- Leaderboard -->
           <div class="card">
             <div class="card-header"><div class="card-title">Топ QR-коди</div></div>
             <div id="leaderboard"></div>
@@ -851,19 +758,17 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
         </div>
 
         <div class="charts-row2">
-          <!-- Donut -->
           <div class="card">
             <div class="card-header"><div class="card-title">Розподіл по кодах</div></div>
             <div class="card-body"><div class="chart-wrap"><canvas id="donut-chart"></canvas></div></div>
           </div>
-          <!-- Heatmap -->
           <div class="card">
             <div class="card-header"><div class="card-title">Активність (168 годин)</div></div>
             <div class="card-body">
               <div style="display:flex;gap:6px">
                 <div class="hm-labels-days">
-                  <div class="hm-label">Нд</div><div class="hm-label">Пн</div><div class="hm-label">Вт</div>
-                  <div class="hm-label">Ср</div><div class="hm-label">Чт</div><div class="hm-label">Пт</div><div class="hm-label">Сб</div>
+                  <div class="hm-label">Пн</div><div class="hm-label">Вт</div><div class="hm-label">Ср</div>
+                  <div class="hm-label">Чт</div><div class="hm-label">Пт</div><div class="hm-label">Сб</div><div class="hm-label">Нд</div>
                 </div>
                 <div style="flex:1">
                   <div class="heatmap-grid" id="heatmap"></div>
@@ -909,7 +814,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
             </div>
             <div class="card" style="border:none;background:var(--bg4);padding:14px">
               <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text4);margin-bottom:10px">Топ QR за сьогодні</div>
-              <div id="rt-top-list"></div>
+              <div id="rt-top-list"><div style="color:var(--text4);font-size:12px">Немає даних</div></div>
             </div>
           </div>
         </div>
@@ -918,33 +823,32 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
     <!-- ═══ GEO ═══ -->
     <div class="view" id="view-geo">
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
-        <div class="kpi kpi-codes"><div class="kpi-label">Країн</div><div class="kpi-val" id="geo-countries">0</div><div class="kpi-delta neu">виявлено</div></div>
-        <div class="kpi kpi-scans"><div class="kpi-label">Топ країна</div><div class="kpi-val" style="font-size:16px" id="geo-top">—</div><div class="kpi-delta neu" id="geo-top-n">—</div></div>
-        <div class="kpi kpi-avg"><div class="kpi-label">Всього скан.</div><div class="kpi-val" id="geo-total">0</div><div class="kpi-delta neu">зі всіх регіонів</div></div>
-      </div>
-      <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px">
-        <div class="card">
-          <div class="card-header"><div class="card-title">Сканування по країнах</div><div class="card-subtitle">На основі зареєстрованих сканувань</div></div>
-          <div class="card-body">
-            <table class="geo-table">
-              <thead><tr><th>Країна</th><th>Скан.</th><th>Частка</th><th style="text-align:right">%</th></tr></thead>
-              <tbody id="geo-tbody"></tbody>
-            </table>
-          </div>
+      <div class="gap12">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <div class="kpi kpi-codes"><div class="kpi-label">Країн</div><div class="kpi-val" id="geo-countries">0</div><div class="kpi-delta neu">виявлено</div></div>
+          <div class="kpi kpi-scans"><div class="kpi-label">Топ країна</div><div class="kpi-val" style="font-size:16px" id="geo-top">—</div><div class="kpi-delta neu" id="geo-top-n">—</div></div>
+          <div class="kpi kpi-avg"><div class="kpi-label">Всього скан.</div><div class="kpi-val" id="geo-total">0</div><div class="kpi-delta neu">зі всіх регіонів</div></div>
         </div>
-        <div class="card">
-          <div class="card-header"><div class="card-title">По QR-кодах</div></div>
-          <div class="card-body"><div class="chart-wrap"><canvas id="geo-bar-chart"></canvas></div></div>
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px">
+          <div class="card">
+            <div class="card-header"><div class="card-title">Сканування по країнах</div><div class="card-subtitle">На основі зареєстрованих сканувань</div></div>
+            <div class="card-body">
+              <table class="geo-table">
+                <thead><tr><th>Країна</th><th>Скан.</th><th>Частка</th><th style="text-align:right">%</th></tr></thead>
+                <tbody id="geo-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><div class="card-title">По QR-кодах</div></div>
+            <div class="card-body"><div class="chart-wrap"><canvas id="geo-bar-chart"></canvas></div></div>
+          </div>
         </div>
       </div>
     </div>
 
   </div><!-- /content-area -->
 </div><!-- /main -->
-
-<!-- DIV for QRCode.js (hidden, must be visible to canvas API) -->
-
 
 <!-- MODAL -->
 <div class="overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
@@ -956,11 +860,15 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
       </button>
     </div>
     <div class="modal-b">
-      <div class="modal-qr-center"><canvas id="modal-canvas" width="200" height="200"></canvas></div>
+      <div class="modal-qr-center"><canvas id="modal-canvas" width="220" height="220"></canvas></div>
       <div class="modal-url-box" id="modal-url"></div>
+      <div class="modal-stats">
+        <div class="modal-stat"><div class="modal-stat-n" id="modal-scans">0</div><div class="modal-stat-l">Сканувань</div></div>
+        <div class="modal-stat"><div class="modal-stat-n" id="modal-created">—</div><div class="modal-stat-l">Створено</div></div>
+      </div>
     </div>
     <div class="modal-f">
-      <button class="btn btn-ghost btn-sm" onclick="modalDL()">Завантажити</button>
+      <button class="btn btn-ghost btn-sm" onclick="modalDL()">Завантажити PNG</button>
       <button class="btn btn-accent btn-sm" onclick="closeModal()">Закрити</button>
     </div>
   </div>
@@ -970,14 +878,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 
 <script>
 /* ═══════════ STATE ═══════════ */
-let DB = JSON.parse(localStorage.getItem('qrs_pro') || '{"items":[]}');
+let DB = JSON.parse(localStorage.getItem('qrs_pro_v3') || '{"items":[]}');
 let currentId = null;
+let logoImg = null;
 let logoURL = null;
 let liveT = null;
 let timeRange = 7;
 let modalItemId = null;
+let curQType = 'url';
+let favOnly = false;
 
-// chart instances
 let tlChart = null, donutChart = null, geoBarChart = null;
 
 const GEOS = [
@@ -987,16 +897,44 @@ const GEOS = [
   {flag:'🇫🇷',name:'Франція',w:5},{flag:'🇸🇰',name:'Словаччина',w:4},
 ];
 
-function save(){ localStorage.setItem('qrs_pro', JSON.stringify(DB)); }
+const TYPE_ICONS = {url:'🔗',text:'📝',email:'✉️',phone:'📞',sms:'💬',wifi:'📶'};
+const TYPE_NAMES = {url:'URL',text:'Текст',email:'Email',phone:'Телефон',sms:'SMS',wifi:'Wi-Fi'};
+
+function save(){ localStorage.setItem('qrs_pro_v3', JSON.stringify(DB)); }
 function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+
+/* ═══════════ THEME ═══════════ */
+function initTheme(){
+  const saved = localStorage.getItem('qrs_theme');
+  if(saved === 'light') applyTheme('light');
+}
+function toggleTheme(){
+  const isLight = document.documentElement.classList.contains('light');
+  applyTheme(isLight ? 'dark' : 'light');
+}
+function applyTheme(mode){
+  if(mode === 'light'){
+    document.documentElement.classList.add('light');
+    document.getElementById('theme-icon-moon').style.display='none';
+    document.getElementById('theme-icon-sun').style.display='block';
+  } else {
+    document.documentElement.classList.remove('light');
+    document.getElementById('theme-icon-moon').style.display='block';
+    document.getElementById('theme-icon-sun').style.display='none';
+  }
+  localStorage.setItem('qrs_theme', mode);
+  // redraw charts with new colors if analytics view active
+  if(document.getElementById('view-analytics').classList.contains('active')) renderAnalytics();
+  if(document.getElementById('view-geo').classList.contains('active')) renderGeo();
+}
 
 /* ═══════════ NAV ═══════════ */
 const VIEW_META = {
-  generator:['Генератор QR-кодів','Введіть URL і налаштуйте стиль'],
+  generator:['Генератор QR-кодів','Створюйте та відстежуйте QR-коди'],
   history:['Мої QR-коди','Усі створені QR-коди'],
   analytics:['Аналітика','Статистика сканувань'],
-  realtime:['Реальний час','Живі оновлення'],
-  geo:['Географія','Розподіл по країнах'],
+  realtime:['Реальний час','Живі оновлення подій'],
+  geo:['Географія','Розподіл сканувань по країнах'],
 };
 
 function navTo(name){
@@ -1020,6 +958,7 @@ function switchView(name, el){
   if(name==='analytics') renderAnalytics();
   if(name==='realtime') renderRealtime();
   if(name==='geo') renderGeo();
+  document.getElementById('sidebar').classList.remove('open');
 }
 
 function optTab(name, el){
@@ -1027,6 +966,14 @@ function optTab(name, el){
   document.querySelectorAll('.opt-panel').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('op-'+name).classList.add('active');
+}
+
+/* ═══════════ QR TYPE SELECTION ═══════════ */
+function setQType(type){
+  curQType = type;
+  document.querySelectorAll('.qtype-tab').forEach(t=>t.classList.toggle('active', t.dataset.type===type));
+  document.querySelectorAll('.type-field').forEach(f=>f.classList.toggle('active', f.dataset.type===type));
+  liveUpdate();
 }
 
 /* ═══════════ COLOR SYNC ═══════════ */
@@ -1037,92 +984,233 @@ function syncColor(which){
   document.getElementById(which+'-hex').textContent = v;
   liveUpdate();
 }
+function toggleGradient(){
+  const on = document.getElementById('gradient-toggle').checked;
+  document.getElementById('gradient-color-fl').style.display = on ? 'block' : 'none';
+  liveUpdate();
+}
 
-/* ═══════════ QR GENERATION ═══════════ */
-function getECL(){
-  const m={L:QRCode.CorrectLevel.L,M:QRCode.CorrectLevel.M,Q:QRCode.CorrectLevel.Q,H:QRCode.CorrectLevel.H};
-  return m[document.getElementById('ecl').value];
+/* ═══════════ CONTENT BUILDER ═══════════ */
+function buildContent(){
+  switch(curQType){
+    case 'url': {
+      let v = document.getElementById('url-inp').value.trim();
+      if(!v) return null;
+      if(!/^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(v)) v = 'https://'+v;
+      let label;
+      try{ label = new URL(v).hostname.replace(/^www\./,''); }catch{ label = v.slice(0,40); }
+      return {content:v, label, type:'url'};
+    }
+    case 'text': {
+      const v = document.getElementById('text-inp').value.trim();
+      if(!v) return null;
+      return {content:v, label: v.length>30 ? v.slice(0,30)+'…' : v, type:'text'};
+    }
+    case 'email': {
+      const email = document.getElementById('email-to').value.trim();
+      if(!email) return null;
+      const subj = document.getElementById('email-subject').value.trim();
+      const body = document.getElementById('email-body').value.trim();
+      let c = 'mailto:'+email;
+      const params=[];
+      if(subj) params.push('subject='+encodeURIComponent(subj));
+      if(body) params.push('body='+encodeURIComponent(body));
+      if(params.length) c += '?'+params.join('&');
+      return {content:c, label: email, type:'email'};
+    }
+    case 'phone': {
+      const p = document.getElementById('phone-inp').value.trim();
+      if(!p) return null;
+      return {content:'tel:'+p.replace(/\s+/g,''), label: p, type:'phone'};
+    }
+    case 'sms': {
+      const p = document.getElementById('sms-phone').value.trim();
+      if(!p) return null;
+      const m = document.getElementById('sms-msg').value.trim();
+      let c = 'sms:'+p.replace(/\s+/g,'');
+      if(m) c += '?body='+encodeURIComponent(m);
+      return {content:c, label: p, type:'sms'};
+    }
+    case 'wifi': {
+      const ssid = document.getElementById('wifi-ssid').value.trim();
+      if(!ssid) return null;
+      const pass = document.getElementById('wifi-pass').value.trim();
+      const enc = document.getElementById('wifi-enc').value;
+      const esc = s => s.replace(/([\\;,:"])/g, '\\$1');
+      let c = `WIFI:T:${enc};S:${esc(ssid)};`;
+      if(enc !== 'nopass') c += `P:${esc(pass)};`;
+      c += ';';
+      return {content:c, label: ssid, type:'wifi'};
+    }
+  }
+  return null;
+}
+
+/* ═══════════ QR RENDERING (synchronous, reliable) ═══════════ */
+function roundRectPath(ctx,x,y,w,h,r){
+  if(ctx.roundRect){ ctx.beginPath(); ctx.roundRect(x,y,w,h,r); return; }
+  const rr=Math.min(r,w/2,h/2);
+  ctx.beginPath();
+  ctx.moveTo(x+rr,y);
+  ctx.arcTo(x+w,y,x+w,y+h,rr);
+  ctx.arcTo(x+w,y+h,x,y+h,rr);
+  ctx.arcTo(x,y+h,x,y,rr);
+  ctx.arcTo(x,y,x+w,y,rr);
+  ctx.closePath();
+}
+
+function drawModule(ctx,x,y,s,style){
+  if(style==='rd'){
+    roundRectPath(ctx,x,y,s,s,s*0.32);
+    ctx.fill();
+  } else if(style==='dt'){
+    ctx.beginPath();
+    ctx.arc(x+s/2,y+s/2,s*0.42,0,Math.PI*2);
+    ctx.fill();
+  } else {
+    ctx.fillRect(x,y,s,s);
+  }
+}
+
+/**
+ * Draws a QR code onto a canvas. Returns {ok, size, moduleCount} or {ok:false}.
+ * opts: {fg, bg, fg2, gradient, mod, pad, ecl, size}
+ */
+function drawQRToCanvas(canvas, content, opts){
+  opts = opts || {};
+  const size = opts.size || canvas.width || 256;
+  const fg = opts.fg || '#0d0d0d';
+  const bg = opts.bg || '#ffffff';
+  const mod = opts.mod || 'sq';
+  const pad = opts.pad != null ? opts.pad : 2;
+  const ecl = opts.ecl || 'M';
+
+  let qrData;
+  try{
+    qrData = QRCode.create(content, {errorCorrectionLevel: ecl});
+  }catch(e){
+    return {ok:false, error:e};
+  }
+
+  const n = qrData.modules.size;
+  const total = n + pad*2;
+  const cell = size/total;
+
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,size,size);
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,size,size);
+
+  let fillStyle = fg;
+  if(opts.gradient && opts.fg2){
+    const grad = ctx.createLinearGradient(0,0,size,size);
+    grad.addColorStop(0, fg);
+    grad.addColorStop(1, opts.fg2);
+    fillStyle = grad;
+  }
+  ctx.fillStyle = fillStyle;
+
+  for(let r=0;r<n;r++){
+    for(let c=0;c<n;c++){
+      if(qrData.modules.get(r,c)){
+        drawModule(ctx, (c+pad)*cell, (r+pad)*cell, cell, mod);
+      }
+    }
+  }
+
+  return {ok:true, ctx, size, moduleCount:n};
+}
+
+function drawLogoOnCanvas(ctx, size){
+  if(!logoImg) return;
+  const pct = parseInt(document.getElementById('logo-sz').value)/100;
+  const lw = size*pct, lh = lw;
+  const lx = (size-lw)/2, ly = (size-lh)/2;
+  const pad = lw*0.12;
+  ctx.fillStyle = '#fff';
+  roundRectPath(ctx, lx-pad, ly-pad, lw+pad*2, lh+pad*2, 8);
+  ctx.fill();
+  ctx.drawImage(logoImg, lx, ly, lw, lh);
+}
+
+function getStyleOpts(){
+  return {
+    fg: document.getElementById('fg-color').value,
+    fg2: document.getElementById('fg2-color').value,
+    gradient: document.getElementById('gradient-toggle').checked,
+    bg: document.getElementById('bg-color').value,
+    mod: document.getElementById('mod').value,
+    pad: parseInt(document.getElementById('qr-pad').value),
+    ecl: document.getElementById('ecl').value,
+    size: parseInt(document.getElementById('qr-sz').value),
+  };
 }
 
 function liveUpdate(){
   clearTimeout(liveT);
-  liveT = setTimeout(()=>{
-    const url = document.getElementById('url-inp').value.trim();
-    if(url) renderQR(url, true);
-  }, 200);
+  liveT = setTimeout(()=>{ renderPreview(); }, 120);
 }
 
-document.getElementById('url-inp').addEventListener('input', liveUpdate);
-document.getElementById('url-inp').addEventListener('keydown', e=>{ if(e.key==='Enter') generateQR(false); });
-
-async function renderQR(url, isLive){
-  if(!url.match(/^https?:\/\//)) url = 'https://'+url;
-  const size = parseInt(document.getElementById('qr-sz').value);
-  const fg = document.getElementById('fg-color').value;
-  const bg = document.getElementById('bg-color').value;
-  const mod = document.getElementById('mod').value;
-
+function renderPreview(){
+  const built = buildContent();
   const fc = document.getElementById('qr-canvas-final');
+  const emptyEl = document.getElementById('qr-empty');
+  const labelEl = document.getElementById('qr-url-label');
+  const btnsEl = document.getElementById('preview-btns');
 
-  // Each call gets its own isolated temp container
-  const tmp = document.createElement('div');
-  tmp.style.cssText = 'position:fixed;left:-9999px;top:-9999px;opacity:0;pointer-events:none;';
-  document.body.appendChild(tmp);
+  if(!built){
+    fc.style.display='none';
+    emptyEl.style.display='flex';
+    labelEl.textContent='';
+    btnsEl.style.display='none';
+    return null;
+  }
 
-  return new Promise(resolve=>{
-    try {
-      new QRCode(tmp, {
-        text: url, width: size, height: size,
-        colorDark: fg, colorLight: bg, correctLevel: getECL()
-      });
-    } catch(e) {
-      tmp.remove();
-      resolve(false);
-      return;
-    }
-    setTimeout(()=>{
-      const src = tmp.querySelector('canvas');
-      if(!src){ tmp.remove(); resolve(false); return; }
-      const ctx = fc.getContext('2d');
-      fc.width = size; fc.height = size;
-      ctx.fillStyle = bg; ctx.fillRect(0,0,size,size);
-      ctx.drawImage(src, 0, 0);
-      if(mod !== 'sq') applyMod(ctx, size, fg, bg, mod);
-      if(logoURL) drawLogo(ctx, size);
-      tmp.remove();
-      document.getElementById('qr-empty').style.display = 'none';
-      fc.style.display = 'block';
-      resolve(true);
-    }, 300);
-  });
+  const opts = getStyleOpts();
+  const res = drawQRToCanvas(fc, built.content, opts);
+  if(!res.ok){
+    fc.style.display='none';
+    emptyEl.style.display='flex';
+    emptyEl.querySelector('p').innerHTML = 'Не вдалося згенерувати<br>(текст занадто довгий)';
+    labelEl.textContent='';
+    btnsEl.style.display='none';
+    return null;
+  }
+  emptyEl.querySelector('p').innerHTML = 'Заповніть форму<br>для генерації';
+  if(logoImg) drawLogoOnCanvas(res.ctx, res.size);
+
+  emptyEl.style.display='none';
+  fc.style.display='block';
+  labelEl.textContent = `${TYPE_ICONS[built.type]} ${built.label}`;
+  btnsEl.style.display='grid';
+  return built;
 }
 
-async function generateQR(isLive){
-  let url = document.getElementById('url-inp').value.trim();
-  if(!url){toast('Введіть URL','err');return;}
-  if(!url.match(/^https?:\/\//)) url='https://'+url;
+/* Attach live-update listeners */
+document.getElementById('content-card').addEventListener('input', liveUpdate);
+document.getElementById('content-card').addEventListener('change', liveUpdate);
+document.getElementById('url-inp').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); generateQR(); } });
 
-  const ok = await renderQR(url, isLive);
-  if(!ok){toast('Помилка генерації','err');return;}
+/* ═══════════ GENERATE (saves to history) ═══════════ */
+function generateQR(){
+  const built = renderPreview();
+  if(!built){ toast('Заповніть поле для генерації','err'); return; }
 
-  let domain;
-  try{domain=new URL(url).hostname.replace(/^www\./,'');}catch{domain=url.slice(0,40);}
-  document.getElementById('qr-url-label').textContent=domain;
-  document.getElementById('preview-btns').style.display='grid';
+  const opts = getStyleOpts();
 
-  // Check duplicate
-  const dup = DB.items.find(i=>i.url===url);
+  const dup = DB.items.find(i=>i.content===built.content && i.type===built.type);
   if(dup){
     currentId = dup.id;
+    // update style on existing item
+    Object.assign(dup, {fg:opts.fg, fg2:opts.fg2, gradient:opts.gradient, bg:opts.bg, mod:opts.mod, pad:opts.pad, ecl:opts.ecl, size:opts.size, label:built.label});
+    save();
   } else {
-    const item={
-      id:uid(), url, domain,
-      fg:document.getElementById('fg-color').value,
-      bg:document.getElementById('bg-color').value,
-      mod:document.getElementById('mod').value,
-      size:parseInt(document.getElementById('qr-sz').value),
-      scans:0, scanLog:[], geoLog:[],
-      createdAt:Date.now()
+    const item = {
+      id: uid(), type: built.type, content: built.content, label: built.label,
+      fg:opts.fg, fg2:opts.fg2, gradient:opts.gradient, bg:opts.bg, mod:opts.mod, pad:opts.pad, ecl:opts.ecl, size:opts.size,
+      favorite:false, scans:0, scanLog:[], geoLog:[], createdAt:Date.now()
     };
     DB.items.unshift(item);
     save();
@@ -1134,37 +1222,37 @@ async function generateQR(isLive){
   toast('QR-код створено ✓','ok');
 }
 
-function applyMod(ctx,size,fg,bg,mod){
-  const data=ctx.getImageData(0,0,size,size);
-  const pix=data.data;
-  ctx.clearRect(0,0,size,size);
-  ctx.fillStyle=bg; ctx.fillRect(0,0,size,size);
-  const N=33, ms=size/N;
-  for(let r=0;r<N;r++) for(let c=0;c<N;c++){
-    const px=Math.floor((c+.5)*ms), py=Math.floor((r+.5)*ms);
-    const idx=(py*size+px)*4;
-    if(pix[idx]<128){
-      ctx.fillStyle=fg;
-      const x=c*ms+.5, y=r*ms+.5, s=ms-1;
-      ctx.beginPath();
-      if(mod==='rd') ctx.roundRect(x,y,s,s,s*.3);
-      else{ctx.arc(x+s/2,y+s/2,s*.42,0,Math.PI*2);}
-      ctx.fill();
-    }
-  }
+/* ═══════════ LOGO ═══════════ */
+function onLogoFile(inp){
+  const f=inp.files[0]; if(!f)return;
+  if(f.size>2*1024*1024){toast('Файл >2 МБ','err');return;}
+  const r=new FileReader();
+  r.onload=e=>{
+    logoURL=e.target.result;
+    const img = new Image();
+    img.onload=()=>{
+      logoImg = img;
+      document.getElementById('logo-thumb').src=logoURL;
+      document.getElementById('logo-name').textContent=f.name;
+      document.getElementById('logo-drop-area').style.display='none';
+      document.getElementById('logo-info-area').style.display='block';
+      // recommend high error correction
+      if(document.getElementById('ecl').value !== 'H'){
+        document.getElementById('ecl').value = 'H';
+      }
+      liveUpdate();
+      toast('Логотип додано · корекцію встановлено на H');
+    };
+    img.src = logoURL;
+  };
+  r.readAsDataURL(f);
 }
-
-function drawLogo(ctx,size){
-  const pct=parseInt(document.getElementById('logo-sz').value)/100;
-  const lw=size*pct, lh=lw;
-  const lx=(size-lw)/2, ly=(size-lh)/2;
-  const pad=lw*.12;
-  ctx.fillStyle='#fff';
-  ctx.beginPath();
-  ctx.roundRect(lx-pad,ly-pad,lw+pad*2,lh+pad*2,6);
-  ctx.fill();
-  const img=new Image(); img.src=logoURL;
-  ctx.drawImage(img,lx,ly,lw,lh);
+function clearLogo(){
+  logoImg=null; logoURL=null;
+  document.getElementById('logo-file').value='';
+  document.getElementById('logo-drop-area').style.display='block';
+  document.getElementById('logo-info-area').style.display='none';
+  liveUpdate();
 }
 
 /* ═══════════ SCAN TRACKING ═══════════ */
@@ -1172,7 +1260,7 @@ function refreshScanBox(){
   const item=DB.items.find(i=>i.id===currentId);
   if(!item){document.getElementById('scan-box').style.display='none';return;}
   document.getElementById('scan-box').style.display='block';
-  animateCount('scan-big', item.scans);
+  document.getElementById('scan-big').textContent = item.scans;
   renderScanLog(item);
   drawSparkline(item.scanLog);
 }
@@ -1193,9 +1281,8 @@ function animateCount(elId, target){
 
 function addScan(){
   const item=DB.items.find(i=>i.id===currentId);
-  if(!item){toast('Спочатку згенеруйте QR','err');return;}
+  if(!item){toast('Спочатку згенеруйте QR-код','err');return;}
 
-  // pick geo by weight
   let roll=Math.random()*100, acc=0, geo=GEOS[0];
   for(const g of GEOS){acc+=g.w;if(roll<acc){geo=g;break;}}
 
@@ -1206,10 +1293,9 @@ function addScan(){
   item.geoLog.push({...geo,ts:now});
   save();
 
-  // ANIMATE button
   const btn=document.getElementById('scan-add-btn');
   btn.style.transform='scale(.92)';
-  setTimeout(()=>btn.style.transform='',130);
+  setTimeout(()=>{btn.style.transform='';},130);
 
   animateCount('scan-big', item.scans);
   renderScanLog(item);
@@ -1263,46 +1349,46 @@ function drawSparkline(log){
     const bh=Math.max(3,(v/max)*(h-6));
     const x=i*(bw+1), y=h-bh-2;
     ctx.fillStyle=v>0?'rgba(139,92,246,.85)':'rgba(124,58,237,.12)';
-    ctx.beginPath();
-    if(ctx.roundRect) ctx.roundRect(x,y,bw,bh,2);
-    else ctx.rect(x,y,bw,bh);
+    roundRectPath(ctx,x,y,bw,bh,2);
     ctx.fill();
   });
 }
 
-/* ═══════════ LOGO ═══════════ */
-function onLogoFile(inp){
-  const f=inp.files[0]; if(!f)return;
-  if(f.size>2*1024*1024){toast('Файл >2 МБ','err');return;}
-  const r=new FileReader();
-  r.onload=e=>{
-    logoURL=e.target.result;
-    document.getElementById('logo-thumb').src=logoURL;
-    document.getElementById('logo-name').textContent=f.name;
-    document.getElementById('logo-drop-area').style.display='none';
-    document.getElementById('logo-info-area').style.display='block';
-    liveUpdate(); toast('Логотип додано');
-  };
-  r.readAsDataURL(f);
-}
-function clearLogo(){
-  logoURL=null;
-  document.getElementById('logo-file').value='';
-  document.getElementById('logo-drop-area').style.display='block';
-  document.getElementById('logo-info-area').style.display='none';
-  liveUpdate();
+/* ═══════════ HISTORY ═══════════ */
+function toggleFavFilter(){
+  favOnly = !favOnly;
+  document.getElementById('fav-filter-btn').classList.toggle('btn-accent', favOnly);
+  document.getElementById('fav-filter-btn').classList.toggle('btn-ghost', !favOnly);
+  renderHistory();
 }
 
-/* ═══════════ HISTORY ═══════════ */
+function toggleFav(id, e){
+  if(e) e.stopPropagation();
+  const item = DB.items.find(i=>i.id===id);
+  if(!item) return;
+  item.favorite = !item.favorite;
+  save();
+  renderHistory();
+}
+
 function renderHistory(){
   const q=(document.getElementById('hist-search').value||'').toLowerCase();
-  const items=DB.items.filter(i=>!q||i.url.toLowerCase().includes(q)||i.domain.toLowerCase().includes(q));
+  const sort=document.getElementById('hist-sort').value;
+  let items=DB.items.filter(i=>
+    (!q || i.content.toLowerCase().includes(q) || (i.label||'').toLowerCase().includes(q) || TYPE_NAMES[i.type].toLowerCase().includes(q))
+    && (!favOnly || i.favorite)
+  );
+
+  if(sort==='old') items=[...items].reverse();
+  else if(sort==='scans') items=[...items].sort((a,b)=>b.scans-a.scans);
+  else if(sort==='az') items=[...items].sort((a,b)=>(a.label||'').localeCompare(b.label||''));
+
   const grid=document.getElementById('hist-grid');
   if(!items.length){
     grid.innerHTML=`<div class="empty" style="grid-column:1/-1">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-      <h3>${q?'Нічого не знайдено':'Порожня історія'}</h3>
-      <p>${q?'Спробуйте інший запит':'Згенеруйте QR-код і він з'явиться тут'}</p>
+      <h3>${q||favOnly?'Нічого не знайдено':'Порожня історія'}</h3>
+      <p>${q||favOnly?'Спробуйте інші критерії':'Згенеруйте QR-код, і він з’явиться тут'}</p>
     </div>`;
     return;
   }
@@ -1314,10 +1400,13 @@ function renderHistory(){
       <div class="hcard-top">
         <div class="hcard-thumb"><canvas id="ht-${item.id}" width="52" height="52"></canvas></div>
         <div class="hcard-info">
-          <div class="hcard-domain">${item.domain}</div>
-          <div class="hcard-url">${item.url}</div>
-          <div class="hcard-time">${fmtAgo(item.createdAt)}</div>
+          <div class="hcard-domain"><span class="type-pill">${TYPE_ICONS[item.type]||'🔗'}</span><span style="overflow:hidden;text-overflow:ellipsis">${item.label||item.content}</span></div>
+          <div class="hcard-url">${item.content}</div>
+          <div class="hcard-time">${fmtAgo(item.createdAt)} · ${TYPE_NAMES[item.type]}</div>
         </div>
+        <span class="fav-star ${item.favorite?'active':''}" onclick="toggleFav('${item.id}',event)" title="Улюблене">
+          <svg viewBox="0 0 24 24" fill="${item.favorite?'currentColor':'none'}" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </span>
       </div>
       <div class="hcard-bottom">
         <span class="scan-pill">
@@ -1335,41 +1424,73 @@ function renderHistory(){
       </div>`;
     card.onclick=()=>loadItem(item.id);
     grid.appendChild(card);
-    setTimeout(()=>thumbDraw(item,`ht-${item.id}`,52),50);
+    thumbDraw(item,`ht-${item.id}`,52);
   });
 }
 
 function thumbDraw(item,cid,size){
   const c=document.getElementById(cid);if(!c)return;
-  const tmp=document.createElement('div');
-  tmp.style.cssText='position:fixed;left:-9999px;top:-9999px;opacity:0;pointer-events:none;';
-  document.body.appendChild(tmp);
-  new QRCode(tmp,{text:item.url,width:size,height:size,colorDark:item.fg||'#0d0d0d',colorLight:item.bg||'#ffffff',correctLevel:QRCode.CorrectLevel.M});
-  setTimeout(()=>{
-    const s=tmp.querySelector('canvas');
-    if(s){const ctx=c.getContext('2d');ctx.drawImage(s,0,0,size,size);}
-    tmp.remove();
-  },200);
+  drawQRToCanvas(c, item.content, {
+    fg:item.fg||'#0d0d0d', bg:item.bg||'#ffffff', fg2:item.fg2, gradient:item.gradient,
+    mod:item.mod||'sq', pad: item.pad!=null?item.pad:2, ecl:item.ecl||'M', size
+  });
 }
 
-async function loadItem(id){
+function loadItem(id){
   const item=DB.items.find(i=>i.id===id);if(!item)return;
   currentId=id;
-  document.getElementById('url-inp').value=item.url;
+
+  setQType(item.type);
+  switch(item.type){
+    case 'url': document.getElementById('url-inp').value=item.content; break;
+    case 'text': document.getElementById('text-inp').value=item.content; break;
+    case 'email': {
+      const m = item.content.match(/^mailto:([^?]*)(\?(.*))?$/);
+      document.getElementById('email-to').value = m ? decodeURIComponent(m[1]) : '';
+      const qs = m && m[3] ? new URLSearchParams(m[3]) : null;
+      document.getElementById('email-subject').value = qs && qs.get('subject') || '';
+      document.getElementById('email-body').value = qs && qs.get('body') || '';
+      break;
+    }
+    case 'phone': document.getElementById('phone-inp').value=item.content.replace(/^tel:/,''); break;
+    case 'sms': {
+      const m = item.content.match(/^sms:([^?]*)(\?body=(.*))?$/);
+      document.getElementById('sms-phone').value = m ? m[1] : '';
+      document.getElementById('sms-msg').value = m && m[3] ? decodeURIComponent(m[3]) : '';
+      break;
+    }
+    case 'wifi': {
+      const ssidM = item.content.match(/S:((?:\\.|[^;])*);/);
+      const passM = item.content.match(/P:((?:\\.|[^;])*);/);
+      const encM = item.content.match(/T:([^;]*);/);
+      const unesc = s => s ? s.replace(/\\(.)/g,'$1') : '';
+      document.getElementById('wifi-ssid').value = unesc(ssidM && ssidM[1]);
+      document.getElementById('wifi-pass').value = unesc(passM && passM[1]);
+      document.getElementById('wifi-enc').value = (encM && encM[1]) || 'WPA';
+      break;
+    }
+  }
+
   document.getElementById('fg-color').value=item.fg||'#0d0d0d';
   document.getElementById('bg-color').value=item.bg||'#ffffff';
+  document.getElementById('fg2-color').value=item.fg2||'#06b6d4';
   document.getElementById('fg-preview').style.background=item.fg||'#0d0d0d';
   document.getElementById('bg-preview').style.background=item.bg||'#ffffff';
+  document.getElementById('fg2-preview').style.background=item.fg2||'#06b6d4';
   document.getElementById('fg-hex').textContent=item.fg||'#0d0d0d';
   document.getElementById('bg-hex').textContent=item.bg||'#ffffff';
+  document.getElementById('fg2-hex').textContent=item.fg2||'#06b6d4';
+  document.getElementById('gradient-toggle').checked=!!item.gradient;
+  document.getElementById('gradient-color-fl').style.display=item.gradient?'block':'none';
   document.getElementById('mod').value=item.mod||'sq';
-  document.getElementById('qr-sz').value=item.size||256;
-  document.getElementById('sz-lbl').textContent=(item.size||256)+'px';
+  document.getElementById('ecl').value=item.ecl||'M';
+  document.getElementById('qr-pad').value=item.pad!=null?item.pad:2;
+  document.getElementById('pad-lbl').textContent=item.pad!=null?item.pad:2;
+  document.getElementById('qr-sz').value=item.size||320;
+  document.getElementById('sz-lbl').textContent=(item.size||320)+'px';
+
   navTo('generator');
-  await renderQR(item.url, true);
-  let domain;try{domain=new URL(item.url).hostname.replace(/^www\./,'');}catch{domain=item.url.slice(0,40);}
-  document.getElementById('qr-url-label').textContent=domain;
-  document.getElementById('preview-btns').style.display='grid';
+  renderPreview();
   refreshScanBox();
 }
 
@@ -1388,6 +1509,18 @@ function clearAll(){
 }
 
 /* ═══════════ ANALYTICS ═══════════ */
+function chartColors(){
+  const isLight = document.documentElement.classList.contains('light');
+  return {
+    grid: isLight ? 'rgba(0,0,0,.05)' : 'rgba(255,255,255,.04)',
+    tick: isLight ? '#71717a' : '#71717a',
+    tooltipBg: isLight ? '#18181b' : '#18181b',
+    tooltipTitle: '#fafafa',
+    tooltipBody: '#a1a1aa',
+    legend: isLight ? '#3f3f46' : '#a1a1aa',
+  };
+}
+
 function renderAnalytics(){
   const total=DB.items.reduce((a,b)=>a+b.scans,0);
   const count=DB.items.length;
@@ -1400,9 +1533,25 @@ function renderAnalytics(){
   document.getElementById('kpi-avg').textContent=avg||'—';
   document.getElementById('kpi-rate').textContent=rate+'%';
   document.getElementById('kpi-codes-d').textContent=count+' усього';
-  document.getElementById('kpi-scans-d').innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg> всього подій`;
   document.getElementById('kpi-avg-d').textContent='сер. на код';
   document.getElementById('kpi-rate-d').textContent='мають скани';
+
+  // week-over-week growth for scans
+  const now=Date.now();
+  const thisWeek = DB.items.reduce((s,i)=>s+(i.scanLog||[]).filter(t=>now-t<7*86400000).length,0);
+  const lastWeek = DB.items.reduce((s,i)=>s+(i.scanLog||[]).filter(t=>now-t>=7*86400000 && now-t<14*86400000).length,0);
+  const kpiScansD=document.getElementById('kpi-scans-d');
+  if(lastWeek===0 && thisWeek===0){
+    kpiScansD.className='kpi-delta neu';
+    kpiScansD.textContent='немає даних за тиждень';
+  } else if(lastWeek===0){
+    kpiScansD.className='kpi-delta up';
+    kpiScansD.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg> +${thisWeek} за 7д (нові)`;
+  } else {
+    const pct = Math.round((thisWeek-lastWeek)/lastWeek*100);
+    kpiScansD.className='kpi-delta '+(pct>=0?'up':'down');
+    kpiScansD.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="${pct>=0?'18 15 12 9 6 15':'6 9 12 15 18 9'}"/></svg> ${pct>=0?'+':''}${pct}% тиждень/тиждень`;
+  }
 
   document.getElementById('kpi-codes-bar').style.width=Math.min(count*10,100)+'%';
   document.getElementById('kpi-scans-bar').style.width=Math.min(total*2,100)+'%';
@@ -1433,6 +1582,7 @@ function renderTimeline(){
     const end=new Date(start); end.setDate(end.getDate()+1);
     return DB.items.reduce((sum,item)=>sum+(item.scanLog||[]).filter(t=>t>=start&&t<end).length,0);
   });
+  const cc = chartColors();
   if(tlChart) tlChart.destroy();
   const c=document.getElementById('timeline-chart');
   tlChart=new Chart(c,{
@@ -1444,19 +1594,19 @@ function renderTimeline(){
         borderColor:'#8b5cf6',
         backgroundColor:'rgba(139,92,246,.12)',
         tension:.4,fill:true,pointRadius:3,
-        pointBackgroundColor:'#8b5cf6',pointBorderColor:'#18181b',pointBorderWidth:2
+        pointBackgroundColor:'#8b5cf6',pointBorderColor:cc.tooltipBg,pointBorderWidth:2
       }]
     },
     options:{
       responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{
-        backgroundColor:'#18181b',borderColor:'#3a3a3e',borderWidth:1,
-        titleColor:'#fafafa',bodyColor:'#a1a1aa',padding:10,
+        backgroundColor:cc.tooltipBg,borderColor:'#3a3a3e',borderWidth:1,
+        titleColor:cc.tooltipTitle,bodyColor:cc.tooltipBody,padding:10,
         callbacks:{label:c=>`${c.parsed.y} скан.`}
       }},
       scales:{
-        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#71717a',font:{size:10},maxRotation:0}},
-        y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#71717a',font:{size:11}},beginAtZero:true}
+        x:{grid:{color:cc.grid},ticks:{color:cc.tick,font:{size:10},maxRotation:0}},
+        y:{grid:{color:cc.grid},ticks:{color:cc.tick,font:{size:11},precision:0},beginAtZero:true}
       }
     }
   });
@@ -1473,19 +1623,20 @@ function renderLeaderboard(){
       <span class="lb-rank ${ranks[i]}">${i+1}</span>
       <div class="lb-thumb"><canvas id="lb-${item.id}" width="30" height="30"></canvas></div>
       <div class="lb-info">
-        <div class="lb-domain">${item.domain}</div>
-        <div class="lb-url">${item.url.slice(0,40)}</div>
+        <div class="lb-domain">${TYPE_ICONS[item.type]} ${item.label||item.content}</div>
+        <div class="lb-url">${item.content.slice(0,40)}</div>
       </div>
       <div class="lb-meta">
         <div class="lb-bar-wrap"><div class="lb-bar" style="width:${Math.round(item.scans/max*100)}%"></div></div>
         <span class="lb-scans">${item.scans}</span>
       </div>
     </div>`).join('');
-  sorted.forEach(item=>setTimeout(()=>thumbDraw(item,`lb-${item.id}`,30),60));
+  sorted.forEach(item=>thumbDraw(item,`lb-${item.id}`,30));
 }
 
 function renderDonut(){
   const top5=[...DB.items].sort((a,b)=>b.scans-a.scans).slice(0,5);
+  const cc = chartColors();
   if(donutChart) donutChart.destroy();
   const c=document.getElementById('donut-chart');
   if(!top5.length||!top5.some(i=>i.scans>0)){
@@ -1495,18 +1646,18 @@ function renderDonut(){
   donutChart=new Chart(c,{
     type:'doughnut',
     data:{
-      labels:top5.map(i=>i.domain),
+      labels:top5.map(i=>i.label||i.content.slice(0,20)),
       datasets:[{
         data:top5.map(i=>i.scans||0),
         backgroundColor:['#7c3aed','#8b5cf6','#a78bfa','#c4b5fd','#2e1065'],
-        borderColor:'#18181b',borderWidth:2
+        borderColor:cc.tooltipBg,borderWidth:2
       }]
     },
     options:{
       responsive:true,maintainAspectRatio:false,cutout:'68%',
       plugins:{
-        legend:{position:'bottom',labels:{color:'#a1a1aa',font:{size:11},boxWidth:10,padding:10}},
-        tooltip:{backgroundColor:'#18181b',borderColor:'#3a3a3e',borderWidth:1,titleColor:'#fafafa',bodyColor:'#a1a1aa',padding:10}
+        legend:{position:'bottom',labels:{color:cc.legend,font:{size:11},boxWidth:10,padding:10}},
+        tooltip:{backgroundColor:cc.tooltipBg,borderColor:'#3a3a3e',borderWidth:1,titleColor:cc.tooltipTitle,bodyColor:cc.tooltipBody,padding:10}
       }
     }
   });
@@ -1516,21 +1667,31 @@ function renderHeatmap(){
   const hm=document.getElementById('heatmap');
   hm.innerHTML='';
   const now=Date.now();
-  // 7 days × 24 hours = 168 cells, column=hour, row=day
+  const todayDow = new Date().getDay(); // 0=Sun..6=Sat
+  // We want rows Mon..Sun. Compute counts per (daysAgo 0..6, hour 0..23)
+  const grid = []; // grid[dayIndexFromMon][hour]
+  for(let i=0;i<7;i++) grid.push(Array(24).fill(0));
+
+  DB.items.forEach(item=>{
+    (item.scanLog||[]).forEach(t=>{
+      const diffDays = Math.floor((now-t)/86400000);
+      if(diffDays>=0 && diffDays<7){
+        const d=new Date(t);
+        let dow=d.getDay(); // 0=Sun
+        let monIdx=(dow+6)%7; // Mon=0..Sun=6
+        const hour=d.getHours();
+        grid[monIdx][hour]++;
+      }
+    });
+  });
+
   const cells=[];
-  for(let d=6;d>=0;d--){
-    for(let h=0;h<24;h++){
-      const start=now-(d*86400000)-(h*3600000);
-      const end=start+3600000;
-      // wrong order fix: we want col=hour of day, row=day
-      const count=DB.items.reduce((s,item)=>{
-        return s+(item.scanLog||[]).filter(t=>t>=start&&t<end).length;
-      },0);
-      cells.push(count);
-    }
-  }
+  for(let r=0;r<7;r++) for(let h=0;h<24;h++) cells.push(grid[r][h]);
+
   const maxC=Math.max(...cells,1);
-  const COLORS=['rgba(124,58,237,.06)','rgba(124,58,237,.2)','rgba(124,58,237,.4)','rgba(139,92,246,.65)','rgba(167,139,250,.9)'];
+  const COLORS=document.documentElement.classList.contains('light')
+    ? ['rgba(124,58,237,.06)','rgba(124,58,237,.18)','rgba(124,58,237,.36)','rgba(139,92,246,.6)','rgba(124,58,237,.95)']
+    : ['rgba(124,58,237,.06)','rgba(124,58,237,.2)','rgba(124,58,237,.4)','rgba(139,92,246,.65)','rgba(167,139,250,.9)'];
   cells.forEach(v=>{
     const div=document.createElement('div');
     div.className='hm-cell';
@@ -1547,7 +1708,7 @@ function renderHeatmap(){
 let rtFeed = [];
 
 function addRTFeedEntry(item, geo){
-  rtFeed.unshift({domain:item.domain, geo, ts:Date.now()});
+  rtFeed.unshift({label:item.label||item.content, type:item.type, geo, ts:Date.now()});
   if(rtFeed.length>50) rtFeed=rtFeed.slice(0,50);
   if(document.getElementById('view-realtime').classList.contains('active')) renderRealtime();
 }
@@ -1556,20 +1717,19 @@ function renderRealtime(){
   const now=Date.now();
   const feedEl=document.getElementById('rtfeed');
   if(!rtFeed.length){
-    feedEl.innerHTML='<div style="text-align:center;padding:24px 0;color:var(--text4);font-size:13px">Натисніть «+Скануванн» в генераторі</div>';
+    feedEl.innerHTML='<div style="text-align:center;padding:24px 0;color:var(--text4);font-size:13px">Натисніть «Скан» в генераторі, щоб побачити подію</div>';
   } else {
     feedEl.innerHTML=rtFeed.slice(0,20).map(e=>`
       <div class="rtfeed-entry">
         <div class="rtfeed-dot"></div>
         <span class="rtfeed-flag">${e.geo?.flag||'🌐'}</span>
         <div class="rtfeed-info">
-          <div class="rtfeed-domain">${e.domain}</div>
+          <div class="rtfeed-domain">${TYPE_ICONS[e.type]||''} ${e.label}</div>
           <div class="rtfeed-loc">${e.geo?.name||'Невідомо'}</div>
         </div>
         <span class="rtfeed-time">${fmtTime(e.ts)}</span>
       </div>`).join('');
   }
-  // hour / today
   const hour=rtFeed.filter(e=>now-e.ts<3600000).length;
   const today=rtFeed.filter(e=>{
     const d=new Date(e.ts); const n=new Date(now);
@@ -1578,21 +1738,20 @@ function renderRealtime(){
   document.getElementById('rt-hour').textContent=hour;
   document.getElementById('rt-today').textContent=today;
 
-  // top by domain today
-  const byDomain={};
+  const byLabel={};
   rtFeed.forEach(e=>{
     const d=new Date(e.ts),n=new Date(now);
     if(d.getDate()===n.getDate()&&d.getMonth()===n.getMonth()){
-      byDomain[e.domain]=(byDomain[e.domain]||0)+1;
+      byLabel[e.label]=(byLabel[e.label]||0)+1;
     }
   });
-  const sorted=Object.entries(byDomain).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const sorted=Object.entries(byLabel).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const tl=document.getElementById('rt-top-list');
   if(!sorted.length){tl.innerHTML='<div style="color:var(--text4);font-size:12px">Немає даних</div>';return;}
   const mx=sorted[0][1];
-  tl.innerHTML=sorted.map(([dom,n])=>`
+  tl.innerHTML=sorted.map(([label,n])=>`
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-      <span style="font-size:13px;font-weight:500;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${dom}</span>
+      <span style="font-size:13px;font-weight:500;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${label}</span>
       <div style="width:60px;height:4px;background:var(--bg5);border-radius:4px;flex-shrink:0">
         <div style="height:100%;width:${Math.round(n/mx*100)}%;background:var(--accent2);border-radius:4px"></div>
       </div>
@@ -1633,22 +1792,22 @@ function renderGeo(){
     }).join('');
   }
 
-  // geo bar chart
+  const cc = chartColors();
   if(geoBarChart) geoBarChart.destroy();
   const top5sorted=[...DB.items].sort((a,b)=>b.scans-a.scans).slice(0,6);
   const gc=document.getElementById('geo-bar-chart');
   geoBarChart=new Chart(gc,{
     type:'bar',
     data:{
-      labels:top5sorted.map(i=>i.domain),
+      labels:top5sorted.map(i=>i.label||i.content.slice(0,15)),
       datasets:[{data:top5sorted.map(i=>i.scans||0),backgroundColor:'rgba(139,92,246,.7)',borderRadius:5,borderSkipped:false}]
     },
     options:{
       indexAxis:'y',responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'#18181b',borderColor:'#3a3a3e',borderWidth:1,titleColor:'#fafafa',bodyColor:'#a1a1aa',padding:8}},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:cc.tooltipBg,borderColor:'#3a3a3e',borderWidth:1,titleColor:cc.tooltipTitle,bodyColor:cc.tooltipBody,padding:8}},
       scales:{
-        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#71717a',font:{size:10}},beginAtZero:true},
-        y:{grid:{display:false},ticks:{color:'#a1a1aa',font:{size:11}}}
+        x:{grid:{color:cc.grid},ticks:{color:cc.tick,font:{size:10},precision:0},beginAtZero:true},
+        y:{grid:{display:false},ticks:{color:cc.legend,font:{size:11}}}
       }
     }
   });
@@ -1658,14 +1817,15 @@ function renderGeo(){
 function openModal(id){
   const item=DB.items.find(i=>i.id===id);if(!item)return;
   modalItemId=id;
-  document.getElementById('modal-ttl').textContent=item.domain;
-  document.getElementById('modal-url').textContent=item.url;
+  document.getElementById('modal-ttl').textContent=`${TYPE_ICONS[item.type]} ${item.label||item.content}`;
+  document.getElementById('modal-url').textContent=item.content;
+  document.getElementById('modal-scans').textContent=item.scans;
+  document.getElementById('modal-created').textContent=fmtAgo(item.createdAt);
   const mc=document.getElementById('modal-canvas');
-  const tmp2=document.createElement('div');
-  tmp2.style.cssText='position:fixed;left:-9999px;top:-9999px;opacity:0;pointer-events:none;';
-  document.body.appendChild(tmp2);
-  new QRCode(tmp2,{text:item.url,width:200,height:200,colorDark:item.fg||'#0d0d0d',colorLight:item.bg||'#ffffff',correctLevel:QRCode.CorrectLevel.M});
-  setTimeout(()=>{const s=tmp2.querySelector('canvas');if(s){const ctx=mc.getContext('2d');ctx.clearRect(0,0,200,200);ctx.drawImage(s,0,0,200,200);}tmp2.remove();},200);
+  drawQRToCanvas(mc, item.content, {
+    fg:item.fg||'#0d0d0d', bg:item.bg||'#ffffff', fg2:item.fg2, gradient:item.gradient,
+    mod:item.mod||'sq', pad:item.pad!=null?item.pad:2, ecl:item.ecl||'M', size:220
+  });
   document.getElementById('modal-overlay').classList.add('open');
 }
 function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
@@ -1674,7 +1834,7 @@ function modalDL(){
   const c=document.getElementById('modal-canvas');
   const a=document.createElement('a');
   a.href=c.toDataURL('image/png');
-  a.download=(item?item.domain:'qr')+'.png';
+  a.download=(item?(item.label||'qr').replace(/[^a-z0-9]+/gi,'_'):'qr')+'.png';
   a.click(); toast('Завантаження…');
 }
 
@@ -1684,14 +1844,19 @@ function downloadQR(){
   if(fc.style.display==='none'||!fc.width){toast('Згенеруйте QR','err');return;}
   const fmt=document.getElementById('exp-fmt').value;
   const sz=parseInt(document.getElementById('exp-sz').value);
+  const built = buildContent();
+  const opts = getStyleOpts();
+  // Re-render at export size for crispness
+  const tmp=document.createElement('canvas');
+  drawQRToCanvas(tmp, built.content, {...opts, size: sz});
+  if(logoImg) drawLogoOnCanvas(tmp.getContext('2d'), sz);
+
   if(fmt==='svg'){
-    const dataUrl=fc.toDataURL('image/png');
+    const dataUrl=tmp.toDataURL('image/png');
     const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${sz}" height="${sz}"><image href="${dataUrl}" width="${sz}" height="${sz}"/></svg>`;
     const blob=new Blob([svg],{type:'image/svg+xml'});
     const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='qr.svg';a.click();
   } else {
-    const tmp=document.createElement('canvas');tmp.width=sz;tmp.height=sz;
-    tmp.getContext('2d').drawImage(fc,0,0,sz,sz);
     const a=document.createElement('a');
     a.href=tmp.toDataURL(fmt==='jpeg'?'image/jpeg':'image/png',.95);
     a.download='qr.'+(fmt==='jpeg'?'jpg':fmt);a.click();
@@ -1699,8 +1864,22 @@ function downloadQR(){
   toast('Файл завантажено ✓','ok');
 }
 function copyURL(){
-  const url=document.getElementById('url-inp').value.trim();if(!url)return;
-  navigator.clipboard.writeText(url).then(()=>toast('URL скопійовано ✓','ok'));
+  const built = buildContent();
+  if(!built){toast('Немає змісту для копіювання','err');return;}
+  navigator.clipboard.writeText(built.content).then(()=>toast('Скопійовано ✓','ok'));
+}
+function copyImage(){
+  const fc=document.getElementById('qr-canvas-final');
+  if(!fc.width){toast('Згенеруйте QR','err');return;}
+  fc.toBlob(blob=>{
+    if(navigator.clipboard && window.ClipboardItem){
+      navigator.clipboard.write([new ClipboardItem({'image/png':blob})])
+        .then(()=>toast('Зображення скопійовано ✓','ok'))
+        .catch(()=>toast('Не вдалося скопіювати','err'));
+    } else {
+      toast('Браузер не підтримує копіювання зображень','err');
+    }
+  },'image/png');
 }
 function shareQR(){
   const fc=document.getElementById('qr-canvas-final');
@@ -1717,9 +1896,9 @@ function shareQR(){
 }
 function exportCSV(){
   if(!DB.items.length){toast('Немає даних','err');return;}
-  const rows=[['ID','URL','Домен','Сканувань','Дата створення']];
-  DB.items.forEach(i=>rows.push([i.id,i.url,i.domain,i.scans,new Date(i.createdAt).toLocaleString('uk-UA')]));
-  const csv=rows.map(r=>r.map(c=>`"${c}"`).join(',')).join('\n');
+  const rows=[['ID','Тип','Зміст','Назва','Сканувань','Улюблене','Дата створення']];
+  DB.items.forEach(i=>rows.push([i.id,TYPE_NAMES[i.type],i.content,i.label,i.scans,i.favorite?'Так':'Ні',new Date(i.createdAt).toLocaleString('uk-UA')]));
+  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='qr-studio.csv';a.click();
   toast('CSV завантажено ✓','ok');
@@ -1756,7 +1935,15 @@ function fmtTime(ts){
   return d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0')+':'+d.getSeconds().toString().padStart(2,'0');
 }
 
-/* INIT */
+/* ═══════════ RESPONSIVE BURGER ═══════════ */
+function checkBurger(){
+  document.getElementById('burger-btn').style.display = window.innerWidth<=680 ? 'flex' : 'none';
+}
+window.addEventListener('resize', checkBurger);
+
+/* ═══════════ INIT ═══════════ */
+initTheme();
+checkBurger();
 updateGlobalStats();
 </script>
 </body>
